@@ -25,6 +25,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         return throwError(() => err);
       }
 
+
       const hasTokenCookie = document.cookie.split(';').some(c => c.trim().startsWith('token='));
 
       if (err.status === 401 && !refreshing && hasTokenCookie) {
