@@ -1,0 +1,161 @@
+/* ====== Lienzo general (mismo look del login) ====== */
+:host {
+  --bg: #eeeeee;
+  --card: #d9d4d4;
+  --text: #0f0f0f;
+  --accent: #0f0f0f;
+
+  display: block;
+  min-height: calc(100dvh - 120px);    
+  background: var(--bg);
+  padding: clamp(16px, 3vw, 32px);
+}
+
+/* ====== Título ====== */
+:host h1 {
+  margin: 0 auto clamp(28px, 5vw, 48px);
+  max-width: 980px;
+  font-size: clamp(28px, 6vw, 56px);
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  color: var(--text);
+}
+
+/* ====== Tarjeta contenedora ====== */
+:host form {
+  margin: 0 auto;
+  max-width: 980px;
+  background: var(--card);
+  border-radius: 16px;
+  padding: clamp(18px, 3.5vw, 42px);
+  box-shadow:
+    0 14px 28px rgba(0,0,0,.08),
+    0 22px 60px rgba(0,0,0,.10);
+}
+
+/* ====== Bloques de campo ====== */
+:host form > label {
+  display: block;
+  margin: clamp(10px, 2vw, 18px) 0 8px;
+  color: var(--text);
+  font-size: clamp(12px, 1.4vw, 14px);
+  letter-spacing: .28em;
+  text-transform: uppercase;
+}
+
+/* Inputs y textarea al estilo “línea + esquina redondeada” */
+:host input[type="text"],
+:host input[type="email"],
+:host input[type="password"],
+:host input[type="date"],
+:host textarea {
+  width: min(860px, 100%);
+  display: block;
+  padding: 14px 16px 12px 16px;
+  border: 2px solid var(--accent);
+  border-bottom-width: 2px;
+  border-radius: 14px;
+  background: transparent;
+  color: var(--text);
+  outline: none;
+  transition: box-shadow .2s ease, transform .05s ease;
+}
+
+:host textarea { min-height: 84px; resize: vertical; }
+
+:host input:focus,
+:host textarea:focus {
+  box-shadow: 0 8px 18px rgba(0,0,0,.08);
+  transform: translateY(-1px);
+}
+
+/* Pista bajo la contraseña */
+:host small {
+  display: block;
+  margin-top: 6px;
+  margin-bottom: 10px;
+  color: rgba(0,0,0,.7);
+  font-size: 12px;
+  letter-spacing: .04em;
+}
+
+/* ====== File input (sin cambiar HTML) ====== */
+:host input[type="file"] {
+  width: min(860px, 100%);
+  display: block;
+  margin-top: 10px;
+  border: 2px dashed var(--accent);
+  border-radius: 12px;
+  padding: 10px;
+  background: transparent;
+  color: var(--text);
+}
+
+/* Botón nativo del file input */
+:host input[type="file"]::file-selector-button {
+  margin-right: 12px;
+  padding: 10px 14px;
+  border: 2px solid var(--accent);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  transition: transform .05s ease, box-shadow .2s ease, background .2s ease;
+}
+
+:host input[type="file"]::file-selector-button:hover {
+  box-shadow: 0 6px 12px rgba(0,0,0,.08);
+  transform: translateY(-1px);
+}
+
+/* ====== Preview de la imagen ====== */
+:host form img[alt="preview"] {
+  height: 90px;
+  width: auto;
+  border-radius: 10px;
+  border: 2px solid var(--accent);
+  box-shadow: 0 6px 12px rgba(0,0,0,.08);
+}
+
+/* ====== Botón submit ====== */
+:host button[type="submit"] {
+  margin-top: clamp(12px, 2.4vw, 24px);
+  padding: 12px 22px;
+  border: 2px solid var(--accent);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text);
+  font-weight: 600;
+  letter-spacing: .22em;
+  text-transform: capitalize;
+  cursor: pointer;
+  transition: transform .05s ease, box-shadow .2s ease, background .2s ease;
+}
+
+:host button[type="submit"]:hover {
+  box-shadow: 0 8px 18px rgba(0,0,0,.10);
+  transform: translateY(-1px);
+}
+
+:host button[type="submit"]:active { transform: translateY(0); }
+
+/* ====== Mensajes de error ====== */
+:host form p[style*="color:crimson"] {
+  margin-top: 8px;
+  font-weight: 700;
+  letter-spacing: .06em;
+}
+
+.error {
+  background: #ffe6e6;
+  color: #a10000;
+  padding: 14px 16px 12px 16px;
+  border-radius: 6px;
+  margin: 10px 0;
+  width: min(860px, 100%)
+}
+
+@media (max-width: 520px) {
+  :host form { padding: 18px; }
+  :host h1 { letter-spacing: .14em; }
+}
