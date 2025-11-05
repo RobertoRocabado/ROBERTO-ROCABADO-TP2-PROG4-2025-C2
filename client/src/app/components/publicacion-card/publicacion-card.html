@@ -1,0 +1,64 @@
+<article class="card">
+  <header class="user">
+    <div class="avatar" [style.background-image]="'url(' + (pub.usuario.fotoUrl || '') + ')'"
+      [class.has-img]="!!pub.usuario.fotoUrl">
+      @if (!pub.usuario.fotoUrl) { {{ avatarIniciales(pub.usuario.nombre, pub.usuario.apellido) }} }
+    </div>
+    <div class="meta">
+      <div class="name">
+        <strong>{{ pub.usuario.nombre }} {{ pub.usuario.apellido }}</strong>
+        <small>&lt;{{ pub.usuario.correo }}&gt;</small>
+      </div>
+      <small class="date">{{ pub.createdAt | date:'medium' }}</small>
+    </div>
+
+    @if (esPropia) {
+    <button class="ghost danger" (click)="eliminar.emit(pub._id)">Eliminar</button>
+    }
+  </header>
+
+  <h3 class="titulo">{{ pub.titulo }}</h3>
+  <p class="descripcion">{{ pub.descripcion }}</p>
+
+  @if (pub.imagenUrl) {
+  <img class="imagen" [src]="pub.imagenUrl!" alt="imagen publicación">
+  }
+
+  <footer class="acciones">
+    @if (!dioLike) {
+    <button (click)="like.emit(pub._id)">👍 Me gusta ({{ pub.likesCount }})</button>
+    } @else {
+    <button class="liked" (click)="unlike.emit(pub._id)">💔 Quitar like ({{ pub.likesCount }})</button>
+    }
+    <button class="ghost" (click)="toggleComentar()">💬 Comentar</button>
+  </footer>
+
+  @if (comentarAbierto()) {
+  <div class="comentar">
+    <input [(ngModel)]="textoComentario" placeholder="Escribe un comentario..." maxlength="800">
+    <button (click)="enviarComentario()">Enviar</button>
+  </div>
+  }
+
+  <section class="comentarios">
+    @if (pub.comentarios.length > 0) {
+    <h4>Comentarios ({{ pub.comentarios.length }})</h4>
+    <ul>
+      @for (
+      c of pub.comentarios;
+      track (c._id ?? (c.createdAt + '-' + c.autor.correo) ?? $index)
+      ) {
+      <li>
+        <div class="bubble">
+          <div class="autor">
+            <strong>{{ c.autor.nombre }} {{ c.autor.apellido }}</strong>
+            <small>&lt;{{ c.autor.correo }}&gt;</small>
+            <span class="ago">{{ c.createdAt | date:'medium' }}</span>
+          </div>
+          <p>{{ c.texto }}</p>
+        </div>
+      </li>
+      }
+    </ul>
+    }
+  </section>

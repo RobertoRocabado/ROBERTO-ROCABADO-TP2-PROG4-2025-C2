@@ -1,0 +1,12 @@
+<form class="form" (ngSubmit)="submit()">
+  <div class="row">
+    <input type="text" placeholder="Título" [(ngModel)]="titulo" name="titulo" required maxlength="140">
+  </div>
+  <div class="row">
+    <textarea placeholder="Descripción" [(ngModel)]="descripcion" name="descripcion" required maxlength="2000"></textarea>
+  </div>
+  <div class="row file">
+    <input id="fileImagen" type="file" (change)="onFile($event)" accept="image/*">
+  </div>
+  <button type="submit">Publicar</button>
+</form>

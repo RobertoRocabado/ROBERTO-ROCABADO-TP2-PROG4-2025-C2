@@ -6,7 +6,7 @@ import { supabase } from '../supabase.client';
 
 @Injectable()
 export class AuthService {
-  private bucket = process.env.SUPABASE_BUCKET!; // "avatars" el nombre del bucket de Supabase
+  private bucket = process.env.SUPABASE_BUCKET_AVATARS!; // "avatars" el nombre del bucket de Supabase
 
   constructor(private users: UsuariosService, private jwt: JwtService) {}
 
@@ -64,13 +64,13 @@ export class AuthService {
 
   async login(login: string, password: string) {
     const user = await this.users.findOneByLogin(login);
-    if (!user || !user.habilitado) throw new UnauthorizedException('No autorizado');
+    if (!user || !user.habilitado) throw new UnauthorizedException('Usuario o Correo No Valido');
 
     const ok = await bcrypt.compare(password, user.password);
-    if (!ok) throw new UnauthorizedException('Credenciales inválidas');
+    if (!ok) throw new UnauthorizedException('Contraseña Incorrecta');
 
     const payload = { sub: String(user._id), username: user.username, rol: user.rol };
-    const token = await this.jwt.signAsync(payload, { expiresIn: '15m' });
+    const token = await this.jwt.signAsync(payload, { expiresIn: '8h' });  //'15m' para 15 minutos y 8h para ocho horas y tambien cambiarlo en el auth.controller ambos deben estar sincronizados
     return { user: { ...user.toObject(), password: undefined }, token, payload };
   }
 

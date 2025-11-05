@@ -26,7 +26,9 @@
           <p class="email">
             {{ auth.usuario.correo }}
           </p>
-
+          @if(auth.usuario.rol === 'administrador'){
+          <p class="rol">Administrador</p>
+          }
         </div>
       </div>
     </div>

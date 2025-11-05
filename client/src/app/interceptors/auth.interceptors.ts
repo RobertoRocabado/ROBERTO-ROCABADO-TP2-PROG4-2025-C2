@@ -1,35 +1,37 @@
 import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
-import { inject } from '@angular/core';
+import { inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
 import { catchError, switchMap, throwError } from 'rxjs';
 import { AuthService } from '../service/auth.service';
 
-const AUTH_PATHS = [
-  '/api/auth/login',
-  '/api/auth/registro',
-  '/api/auth/autorizar',
-  '/api/auth/refrescar'
-];
+const AUTH_PATHS = ['/auth/login', '/auth/registro', '/auth/autorizar', '/auth/refrescar'];
 
 let refreshing = false;
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
   const auth = inject(AuthService);
-
+  const platformId = inject(PLATFORM_ID);
+  const isBrowser = isPlatformBrowser(platformId);
   const withCreds = req.clone({ withCredentials: true });
 
   return next(withCreds).pipe(
     catchError((err: HttpErrorResponse) => {
-      if (AUTH_PATHS.some(p => req.url.includes(p))) {
+      const url = req.url || '';
+      if (AUTH_PATHS.some(p => url.includes(p))) {
         return throwError(() => err);
       }
 
-
-      const hasTokenCookie = document.cookie.split(';').some(c => c.trim().startsWith('token='));
+      const hasTokenCookie =
+        isBrowser &&
+        document.cookie
+          .split(';')
+          .some(c => c.trim().startsWith('token='));
 
       if (err.status === 401 && !refreshing && hasTokenCookie) {
         refreshing = true;
+
         return auth.refrescar().pipe(
           switchMap(() => {
             refreshing = false;
@@ -37,8 +39,8 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
           }),
           catchError(e => {
             refreshing = false;
-            auth.logout();
-            router.navigateByUrl('/login');
+            auth.logout().subscribe({ error: () => {} });
+            if (isBrowser) router.navigateByUrl('/login');
             return throwError(() => e);
           })
         );

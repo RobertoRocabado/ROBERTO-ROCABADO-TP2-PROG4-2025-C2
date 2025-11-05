@@ -1,16 +1,18 @@
+//==================== NUEVO ====================
 import {
   BadRequestException, Body, Controller, Post, Res, Req,
   UseInterceptors, UploadedFile,
-  Get
+  Get,
+  UseGuards
 } from '@nestjs/common';
 import express from 'express';
 import { AuthService } from './auth.service';
 import { CreateUsuarioDto } from 'src/usuarios/dto/create-usuario.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { AnyFilesInterceptor, FileInterceptor } from '@nestjs/platform-express'; // <-- agregado AnyFilesInterceptor
 import { memoryStorage } from 'multer';
 import { extname } from 'path';
 import type { Request } from 'express';
-import {CookieOptions} from 'express';
+import { JwtStrategy } from './jwt.strategy/jwt.strategy.service';
 
 @Controller('auth')
 export class AuthController {
@@ -19,8 +21,8 @@ export class AuthController {
   private cookieBase = {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax' as const, 
-    path: '/', 
+    sameSite: 'lax' as const,
+    path: '/',
   };
 
   // ========================= REGISTRO =========================
@@ -46,16 +48,23 @@ export class AuthController {
 
   // ========================= LOGIN =========================
   @Post('login')
+  @UseInterceptors(AnyFilesInterceptor()) // <-- clave para form-data
   async login(
     @Body() body: any,
     @Res({ passthrough: true }) res: express.Response
   ) {
-    const { login, password } = body;
+    const login = body?.login;
+    const password = body?.password;
+    if (!login || !password) {
+      throw new BadRequestException('login y password son requeridos');
+    }
+
     const { token, user } = await this.service.login(login, password);
 
     res.cookie('token', token, {
       ...this.cookieBase,
-      maxAge: 15 * 60 * 1000, // 15 minutos
+      maxAge: 8 * 60 * 60 * 1000, //8 horas debo cambiarlo tambien en el auth.service para que este sincronizados
+      //maxAge: 15 * 60 * 1000, // 15 minutos 
     });
 
     return { user };
@@ -70,24 +79,20 @@ export class AuthController {
   }
 
   // ========================= AUTORIZAR =========================
+  @Post('autorizar')
+  async autorizar(@Req() req: Request) {
+    const bearer = req.get('authorization')?.replace(/^Bearer\s+/i, '');
+    const token = (req as any).cookies?.token || bearer || '';
 
-@Post('autorizar')
-async autorizar(@Req() req: Request) {
-  const bearer = req.get('authorization')?.replace(/^Bearer\s+/i, '');
-  const token =
-    (req as any).cookies?.token || bearer || '';
+    if (!token) return { ok: false };
 
-  // Si no hay token, responde 200 con ok:false (no logueado)
-  if (!token) return { ok: false };
-
-  try {
-    const payload = await this.service.autorizar(token);
-    return { ok: true, ...payload };
-  } catch {
-    // Token inválido/expirado -> NO 401; devolvemos ok:false para no ensuciar consola
-    return { ok: false };
+    try {
+      const payload = await this.service.autorizar(token);
+      return { ok: true, ...payload };
+    } catch {
+      return { ok: false };
+    }
   }
-}
 
   // ========================= REFRESCAR =========================
   @Post('refrescar')
@@ -105,21 +110,17 @@ async autorizar(@Req() req: Request) {
     return { ok: true };
   }
 
-  // ========================= NUEVO =========================
+  // ========================= ME =========================
   @Get('me')
   async me(@Req() req: Request) {
     const token = (req as any).cookies?.token;
-
     if (!token) return { ok: false };
 
     try {
-      const user = await this.service.userFromToken(token); 
+      const user = await this.service.userFromToken(token);
       return { ok: true, user };
     } catch {
       return { ok: false };
     }
   }
 }
-
-
-

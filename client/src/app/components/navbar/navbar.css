@@ -117,7 +117,7 @@
   top: 55px;
   left: 50%;
   transform: translateX(-50%);
-  width: 200px;
+  width: 300px;
   padding: 10px;
   background: white;
   border-radius: 12px;
@@ -150,12 +150,21 @@
 }
 
 .user-data .name {
+  font-size: 25px;
   font-weight: bold;
-  margin: 4px 0;
+  margin: 10px 0;
 }
 
 .user-data .email {
-  font-size: 0.8rem;
+  font-size: 15px;
   color: black;
-  margin: 0;
+  margin: 10px 0;
+  font-weight: bold;
+}
+
+.rol {
+  font-size: 15px;
+  color: #6d6d6d;
+  font-weight: bold;
+  margin: 10px 0;
 }

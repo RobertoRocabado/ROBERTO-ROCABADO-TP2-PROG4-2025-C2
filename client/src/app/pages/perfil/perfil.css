@@ -1,0 +1,85 @@
+.pagina-perfil {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+.perfil-card {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    background: #fafafa;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+}
+
+.foto-perfil {
+    width: 500px;
+    height: 320px;
+    border-radius: 9px;
+    object-fit: cover;
+    margin: 5px auto;
+}
+
+.info > p{
+    font-size: 18px;
+}
+
+.titulo-seccion {
+    margin: 0 0 0.75rem;
+}
+
+.lista-publicaciones {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.publicacion {
+    border: 1px solid #e5e5e5;
+    padding: 1rem;
+    border-radius: 10px;
+    background: #fff;
+}
+
+.encabezado-publicacion {
+    display: flex;
+    gap: .7rem;
+    align-items: center;
+    margin-bottom: .5rem;
+}
+
+.mini-foto {
+    width: 40px;
+    height: 40px;
+    border-radius: 100%;
+    object-fit: cover;
+}
+
+.imagen-publicacion {
+    width: 100%;
+    max-height: 420px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin: .5rem 0;
+    border: 1px solid #f1f1f1;
+}
+
+.descripcion-publicacion {
+    margin: .25rem 0 .5rem;
+}
+
+.comentarios {
+    margin-top: .5rem;
+}
+
+.cabecera-comentario {
+    display: flex;
+    gap: 8px;
+    align-items: baseline;
+}
+
+.fecha-comentario {
+    color: #777;
+}

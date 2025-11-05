@@ -1,4 +1,3 @@
-/* ====== Registro: estilo tipo "card" minimal ====== */
 .container {
   --bg: #eeeeee;
   --card: #d9d4d4;
@@ -11,7 +10,6 @@
   background: var(--bg);
 }
 
-/* Título grande */
 :host h2 {
   margin: 0 auto clamp(28px, 5vw, 48px);
   max-width: 980px;
@@ -22,7 +20,6 @@
   color: var(--text);
 }
 
-/* Tarjeta contenedora del formulario */
 :host form {
   margin: 0 auto;
   max-width: 980px;
@@ -34,7 +31,6 @@
     0 22px 60px rgba(0,0,0,.10);
 }
 
-/* Cada fila (label + input) como bloque, con separación generosa */
 :host form > label {
   display: block;
   margin: clamp(12px, 2.2vw, 20px) 0;
@@ -44,7 +40,6 @@
   text-transform: uppercase;
 }
 
-/* Inputs base: línea inferior + bordes redondeados arriba-izq */
 :host input[type="text"],
 :host input[type="email"],
 :host input[type="password"],
@@ -68,14 +63,12 @@
   resize: vertical;
 }
 
-/* Focus: sutil “glow” */
 :host input:focus,
 :host textarea:focus {
   box-shadow: 0 8px 18px rgba(0,0,0,.08);
   transform: translateY(-1px);
 }
 
-/* ====== File input “bonito” (sin tocar HTML) ====== */
 :host input[type="file"] {
   width: min(860px, 100%);
   display: block;
@@ -87,7 +80,6 @@
   color: var(--text);
 }
 
-/* Botón nativo del file input */
 :host input[type="file"]::file-selector-button {
   margin-right: 12px;
   padding: 10px 14px;
@@ -104,7 +96,6 @@
   transform: translateY(-1px);
 }
 
-/* ====== Botón “Entrar / Crear cuenta” ====== */
 :host button[type="submit"] {
   margin-top: clamp(12px, 2.4vw, 24px);
   padding: 12px 22px;
@@ -127,8 +118,6 @@
 :host button[type="submit"]:active {
   transform: translateY(0);
 }
-
-/* Mensajes de error (si los tienes como <p style="color:red"> … ) */
 .error{
   margin-top: 20px;
   color: #c00000 !important;

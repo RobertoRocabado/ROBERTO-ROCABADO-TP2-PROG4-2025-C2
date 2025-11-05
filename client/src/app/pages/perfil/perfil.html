@@ -1,1 +1,65 @@
-<p>perfil works!</p>
+<section class="pagina-perfil">
+
+    <!-- PERFIL DEL USUARIO -->
+    @if (usuario(); as u) {
+    <div class="perfil-card">
+        <div class="info">
+            <p><strong>Usuario:</strong> @{{ u.username }}</p>
+            <p><strong>Correo:</strong> {{ u.correo }}</p>
+            <p><strong>Rol:</strong> {{ u.rol }}</p>
+            @if (u.fechaNacimiento) {
+            <p><strong>Fecha de nacimiento:</strong> {{ u.fechaNacimiento | date:'longDate' }}</p>
+            }
+            @if (u.descripcion) {
+            <p><strong>Descripción del usuario:</strong> {{ u.descripcion }}</p>
+            }
+        </div>
+        <br>
+        <img class="foto-perfil" [src]="fotoPerfil" alt="Foto de perfil" />
+    </div>
+    }
+
+    <!-- PUBLICACIONES PROPIAS -->
+    <h2 class="titulo-seccion">Mis últimas 3 publicaciones</h2>
+    @if (errorPosts()) {
+    <div class="mensaje-error">{{ errorPosts() }}</div>
+    }
+    @if (cargandoPosts()) {
+    <p>Cargando publicaciones...</p>
+    } @else {
+    <div class="lista-publicaciones">
+        @for (p of publicaciones(); track trackById($index, p)) {
+        <article class="publicacion">
+            <header class="encabezado-publicacion">
+                <img class="mini-foto" [src]="p.usuario.fotoUrl " alt="Avatar">
+                <div class="titulos">
+                    <h4>{{ p.titulo }}</h4>
+                    <small>
+                        por {{ p.usuario.nombre }} {{ p.usuario.apellido }}
+                        — {{ p.createdAt | date:'short' }}
+                    </small>
+                </div>
+            </header>
+            @if (p.imagenUrl) {
+            <img class="imagen-publicacion" [src]="p.imagenUrl" alt="Imagen de la publicación">
+            }
+            <p class="descripcion-publicacion">{{ p.descripcion }}</p>
+            @if (p.comentarios.length) {
+            <div class="comentarios">
+                <h3>Comentarios:</h3>
+                @for (c of p.comentarios; track c._id) {
+                <div class="comentario">
+                    <div class="cabecera-comentario">
+                        <strong>{{ c.autor.nombre }} {{ c.autor.apellido }}</strong>
+                        <small class="fecha-comentario">{{ c.createdAt | date:'short' }}</small>
+                    </div>
+                    <p>{{ c.texto }}</p>
+                </div>
+                }
+            </div>
+            }
+        </article>
+        }
+    </div>
+    }
+</section>

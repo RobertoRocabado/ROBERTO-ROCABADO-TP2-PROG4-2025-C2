@@ -27,4 +27,9 @@ create(@Body() dto: CreateUsuarioDto) {
 
   @UseGuards(JwtAuthGuard, RolAdminGuard)
   @Post(':id/habilitar') habilitar(@Param('id') id: string) { return this.service.habilitar(id); }
+
+  @Get(':username')
+  getByUsername(@Param('username') username: string) {
+    return this.service.findByUsername(username);
+  }
 }

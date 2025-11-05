@@ -21,19 +21,22 @@ export interface Usuario {
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private user: Usuario | null = null;
-  private base = `${environment.api}/auth`;
+  private base = `${environment.apiBase}${environment.apiPrefix}/auth`;
 
-  private storageKeyUser = 'app:user'
+  private storageKeyUser = 'app:user';
 
-  constructor(private http: HttpClient,  @Inject(PLATFORM_ID) private platformId: Object) {
-if (isPlatformBrowser(this.platformId)) {
+  constructor(private http: HttpClient, @Inject(PLATFORM_ID) private platformId: Object) {
+    if (isPlatformBrowser(this.platformId)) {
       const raw = localStorage.getItem(this.storageKeyUser);
-      if (raw) { try { this.user = JSON.parse(raw) as Usuario; } catch {} }
+      if (raw) {
+        try {
+          this.user = JSON.parse(raw) as Usuario;
+        } catch {}
+      }
     }
-    
   }
 
-    private persistUser(u: Usuario | null) {
+  private persistUser(u: Usuario | null) {
     this.user = u;
     if (isPlatformBrowser(this.platformId)) {
       if (u) localStorage.setItem(this.storageKeyUser, JSON.stringify(u));
@@ -46,11 +49,9 @@ if (isPlatformBrowser(this.platformId)) {
   }
 
   login(login: string, password: string) {
-    return this.http.post<{ user: Usuario }>(
-      `${this.base}/login`,
-      { login, password },
-      { withCredentials: true }
-    ).pipe(tap(res => this.persistUser(res.user)));
+    return this.http
+      .post<{ user: Usuario }>(`${this.base}/login`, { login, password }, { withCredentials: true })
+      .pipe(tap((res) => this.persistUser(res.user)));
   }
 
   autorizar() {
@@ -70,12 +71,17 @@ if (isPlatformBrowser(this.platformId)) {
   }
 
   logout() {
-    return this.http.post(`${this.base}/logout`, {}, { withCredentials: true })
+    return this.http
+      .post(`${this.base}/logout`, {}, { withCredentials: true })
       .pipe(tap(() => this.persistUser(null)));
   }
 
-  get usuario() { return this.user; }
-  setUsuario(u: Usuario | null) { this.persistUser(u); }
+  get usuario() {
+    return this.user;
+  }
+  setUsuario(u: Usuario | null) {
+    this.persistUser(u);
+  }
   isAdmin(): boolean {
     return this.user?.rol === 'administrador';
   }

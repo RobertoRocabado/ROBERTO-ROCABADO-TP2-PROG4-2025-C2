@@ -1,0 +1,45 @@
+.container {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+.toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: .75rem;
+}
+
+.controls select {
+    padding: .4rem .6rem;
+    border-radius: 8px;
+    border: 1px solid #e4e4e7;
+}
+
+.empty {
+    color: #71717a;
+    margin: 1rem 0;
+}
+
+.pager {
+    display: flex;
+    gap: .4rem;
+    justify-content: center;
+    margin: .75rem 0 1.5rem;
+}
+
+.pager button {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: 1px solid #e4e4e7;
+    background: #fff;
+    cursor: pointer;
+}
+
+.pager button.active {
+    background: #3e3e84;
+    color: #fff;
+    border-color: #3e3e84;
+}

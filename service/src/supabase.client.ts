@@ -18,3 +18,5 @@ export const supabase = createClient(
 );
 
 console.log('✅ Supabase conectado correctamente al bucket:', process.env.SUPABASE_BUCKET);
+
+

@@ -4,106 +4,67 @@
 
   <!-- Nombre -->
   <label>Nombre</label>
-  <input
-    type="text"
-    name="nombre"
-    [(ngModel)]="form.nombre"
-    required
-    appSoloLetras
-    #nombre="ngModel"
-  />
+  <input type="text" name="nombre" [(ngModel)]="form.nombre" required appSoloLetras #nombre="ngModel" />
   @if ((nombre.invalid && (nombre.dirty || nombre.touched)) || (submitted && nombre.invalid)) {
-    <div class="error">
-      @if (nombre.errors?.['required']) { <span>El nombre es obligatorio.</span> }
-      @if (nombre.errors?.['soloLetras']) { <span>El nombre no puede contener números ni símbolos.</span> }
-    </div>
+  <div class="error">
+    @if (nombre.errors?.['required']) { <span>El nombre es obligatorio.</span> }
+    @if (nombre.errors?.['soloLetras']) { <span>El nombre no puede contener números ni símbolos.</span> }
+  </div>
   }
 
   <!-- Apellido -->
   <label>Apellido</label>
-  <input
-    type="text"
-    name="apellido"
-    [(ngModel)]="form.apellido"
-    required
-    appSoloLetras
-    #apellido="ngModel"
-  />
+  <input type="text" name="apellido" [(ngModel)]="form.apellido" required appSoloLetras #apellido="ngModel" />
   @if ((apellido.invalid && (apellido.dirty || apellido.touched)) || (submitted && apellido.invalid)) {
-    <div class="error">
-      @if (apellido.errors?.['required']) { <span>El apellido es obligatorio.</span> }
-      @if (apellido.errors?.['soloLetras']) { <span>El apellido no puede contener números ni símbolos.</span> }
-    </div>
+  <div class="error">
+    @if (apellido.errors?.['required']) { <span>El apellido es obligatorio.</span> }
+    @if (apellido.errors?.['soloLetras']) { <span>El apellido no puede contener números ni símbolos.</span> }
+  </div>
   }
 
   <!-- Correo -->
   <label>Correo</label>
-  <input
-    type="email"
-    name="correo"
-    [(ngModel)]="form.correo"
-    required
-    email
-    #correo="ngModel"
-  />
+  <input type="email" name="correo" [(ngModel)]="form.correo" required email #correo="ngModel" />
   @if ((correo.invalid && (correo.dirty || correo.touched)) || (submitted && correo.invalid)) {
-    <div class="error">
-      @if (correo.errors?.['required']) { <span>El correo es obligatorio.</span> }
-      @if (correo.errors?.['email']) { <span>Debe ser un correo válido (debe incluir @).</span> }
-    </div>
+  <div class="error">
+    @if (correo.errors?.['required']) { <span>El correo es obligatorio.</span> }
+    @if (correo.errors?.['email']) { <span>Debe ser un correo válido (debe incluir @).</span> }
+  </div>
   }
 
   <!-- Usuario -->
   <label>Usuario</label>
-  <input
-    type="text"
-    name="username"
-    [(ngModel)]="form.username"
-    required
-    minlength="4"
-    appCapitalizarPrimera
-    #username="ngModel"
-  />
+  <input type="text" name="username" [(ngModel)]="form.username" required minlength="4" appCapitalizarPrimera
+    #username="ngModel" />
   @if ((username.invalid && (username.dirty || username.touched)) || (submitted && username.invalid)) {
-    <div class="error">
-      @if (username.errors?.['required']) { <span>El usuario es obligatorio.</span> }
-      @if (username.errors?.['minlength']) { <span>El usuario debe tener al menos 4 caracteres.</span> }
-    </div>
+  <div class="error">
+    @if (username.errors?.['required']) { <span>El usuario es obligatorio.</span> }
+    @if (username.errors?.['minlength']) { <span>El usuario debe tener al menos 4 caracteres.</span> }
+  </div>
   }
 
   <!-- Contraseña -->
   <label>Contraseña</label>
-  <input
-    type="password"
-    name="password"
-    [(ngModel)]="form.password"
-    required
-    appPasswordRegla
-    #password="ngModel"
-  />
+  <input type="password" name="password" [(ngModel)]="form.password" required appPasswordRegla #password="ngModel" />
   <small>Mínimo 8 caracteres, primera letra en mayúscula y al menos un número.</small>
   @if ((password.invalid && (password.dirty || password.touched)) || (submitted && password.invalid)) {
-    <div class="error">
-      @if (password.errors?.['required']) { <span>La contraseña es obligatoria.</span> }
-      @if (password.errors?.['passwordRegla']) { <span>Debe empezar con mayúscula, tener 8+ caracteres y al menos un número.</span> }
-    </div>
+  <div class="error">
+    @if (password.errors?.['required']) { <span>La contraseña es obligatoria.</span> }
+    @if (password.errors?.['passwordRegla']) { <span>Debe empezar con mayúscula, tener 8+ caracteres y al menos un
+      número.</span> }
+  </div>
   }
 
   <!-- Repetir contraseña -->
   <label>Repetir contraseña</label>
-  <input
-    type="password"
-    name="confirmPassword"
-    [(ngModel)]="confirmPassword"
-    required
-    [appMatchWith]="password"
-    #confirmPasswordModel="ngModel"
-  />
-  @if ((confirmPasswordModel.invalid && (confirmPasswordModel.dirty || confirmPasswordModel.touched)) || (submitted && confirmPasswordModel.invalid)) {
-    <div class="error">
-      @if (confirmPasswordModel.errors?.['required']) { <span>Debes repetir la contraseña.</span> }
-      @if (confirmPasswordModel.errors?.['match']) { <span>Las contraseñas no coinciden.</span> }
-    </div>
+  <input type="password" name="confirmPassword" [(ngModel)]="confirmPassword" required [appMatchWith]="password"
+    #confirmPasswordModel="ngModel" />
+  @if ((confirmPasswordModel.invalid && (confirmPasswordModel.dirty || confirmPasswordModel.touched)) || (submitted &&
+  confirmPasswordModel.invalid)) {
+  <div class="error">
+    @if (confirmPasswordModel.errors?.['required']) { <span>Debes repetir la contraseña.</span> }
+    @if (confirmPasswordModel.errors?.['match']) { <span>Las contraseñas no coinciden.</span> }
+  </div>
   }
 
   <!-- Descripción (opcional) -->
@@ -112,44 +73,36 @@
 
   <!-- Fecha de nacimiento -->
   <label>Fecha de nacimiento</label>
-  <input
-    type="date"
-    name="fechaNacimiento"
-    [(ngModel)]="form.fechaNacimiento"
-    required
-    #fecha="ngModel"
-  />
+  <input type="date" name="fechaNacimiento" [(ngModel)]="form.fechaNacimiento" required #fecha="ngModel" />
   @if ((fecha.invalid && (fecha.dirty || fecha.touched)) || (submitted && fecha.invalid)) {
-    <div class="error">
-      <span>La fecha de nacimiento es obligatoria.</span>
-    </div>
+  <div class="error">
+    <span>La fecha de nacimiento es obligatoria.</span>
+  </div>
   }
 
   <!-- Foto de perfil (obligatoria) -->
   <label>Foto de perfil</label>
   <input type="file" accept="image/*" (change)="onFileSelected($event)" />
   @if (submitted && !fotoFile) {
-    <div class="error">Debes subir una imagen de perfil.</div>
+  <div class="error">Debes subir una imagen de perfil.</div>
   }
   @if (fotoError) {
-    <div class="error">{{ fotoError }}</div>
+  <div class="error">{{ fotoError }}</div>
   }
 
   @if (fotoPreview) {
-    <div style="margin:8px 0;">
-      <img [src]="fotoPreview" alt="preview" style="height:90px;border-radius:8px;">
-    </div>
+  <div style="margin:8px 0;">
+    <img [src]="fotoPreview" alt="preview" style="height:90px;border-radius:8px;">
+  </div>
   }
 
   <!-- Mensaje general al intentar enviar con faltantes -->
   @if (msgGeneral) {
-    <div class="error" style="margin-top:8px;">{{ msgGeneral }}</div>
+  <div class="error" style="margin-top:8px;">{{ msgGeneral }}</div>
   }
-
-  <!-- Importante: no deshabilitamos el botón para poder disparar el mensaje general -->
   <button type="submit">Crear cuenta</button>
-
-  @if (msg) {
-    <p style="color:crimson">{{ msg }}</p>
+  @if (correo.errors?.['server']) {
+  <div class="error">{{ correo.errors?.['server'] }}</div>
   }
+
 </form>
