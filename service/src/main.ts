@@ -5,7 +5,7 @@ import { NestFactory } from '@nestjs/core';
 import { FiltroExcepciones } from './auth/http-exception-filtro';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {cors:true});
   app.use(cookieParser());
   const isProd = process.env.NODE_ENV === 'production';
 
