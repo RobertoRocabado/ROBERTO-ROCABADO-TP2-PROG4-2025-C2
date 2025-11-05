@@ -10,6 +10,7 @@
     "serve:ssr:client": "node dist/client/server/server.mjs",
      "build:vercel": "ng build --configuration=production"
   },
+  "engines": { "node": ">=20" },
   "prettier": {
     "printWidth": 100,
     "singleQuote": true,
