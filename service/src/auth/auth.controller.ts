@@ -3,7 +3,6 @@ import {
   BadRequestException, Body, Controller, Post, Res, Req,
   UseInterceptors, UploadedFile,
   Get,
-  UseGuards
 } from '@nestjs/common';
 import express from 'express';
 import { AuthService } from './auth.service';
@@ -12,16 +11,19 @@ import { AnyFilesInterceptor, FileInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import { extname } from 'path';
 import type { Request } from 'express';
-import { JwtStrategy } from './jwt.strategy/jwt.strategy.service';
+// import { JwtStrategy } from './jwt.strategy/jwt.strategy.service';
+import { CookieOptions } from 'express';
+
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly service: AuthService) {}
 
-  private cookieBase = {
+  private cookieBase: CookieOptions = {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax' as const,
+    // sameSite: 'lax' as const,
+    sameSite: 'none',
     path: '/',
   };
 

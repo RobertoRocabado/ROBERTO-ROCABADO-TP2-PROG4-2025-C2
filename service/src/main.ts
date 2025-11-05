@@ -30,7 +30,7 @@ async function bootstrap() {
 
   app.enableCors({
     origin: [/^http:\/\/localhost:\d+$/, /^http:\/\/127\.0\.0\.1:\d+$/,
-      'https://vercel.com/roberto-rocabados-projects/roberto-rocabado-tp-2-prog-4-2025-c2-868b',
+      'https://roberto-rocabado-tp-2-prog-4-2025-c.vercel.app/',
     ],
     methods: ['GET','HEAD','PUT','PATCH','POST','DELETE','OPTIONS'],
     credentials: true,
