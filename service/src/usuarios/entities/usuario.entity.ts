@@ -17,8 +17,6 @@ export class Usuario {
   @Prop() fotoUrl?: string;
   @Prop({ enum: Rol, default: Rol.USUARIO }) rol: Rol;
   @Prop({ default: true }) habilitado: boolean; 
-//   @Prop({ type: String, required: false, default: null})
-// fotoUrl?: string | null;
 }
 
 export const UsuarioSchema = SchemaFactory.createForClass(Usuario);

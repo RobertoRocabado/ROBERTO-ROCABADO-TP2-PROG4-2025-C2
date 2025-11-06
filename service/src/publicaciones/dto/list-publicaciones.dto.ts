@@ -2,13 +2,11 @@ import { IsIn, IsMongoId, IsInt, Min, IsOptional } from 'class-validator';
 import { Type, Transform } from 'class-transformer';
 
 export class ListPublicacionesDto {
-  // Acepta 'sortBy' normal, pero si no viene y enviaron 'sort', usa ese.
   @IsOptional()
   @IsIn(['fecha', 'likes'])
   @Transform(({ value, obj }) => (value ?? obj.sort ?? 'fecha'), { toClassOnly: true })
   sortBy?: 'fecha' | 'likes' = 'fecha';
 
-  // Alias aceptado (no lo usarás en el service, pero hace que no lo tire el whitelist)
   @IsOptional()
   @IsIn(['fecha', 'likes'])
   sort?: 'fecha' | 'likes';
@@ -17,7 +15,6 @@ export class ListPublicacionesDto {
   @IsMongoId()
   userId?: string;
 
-  // page opcional (1-based)
   @IsOptional()
   @Type(() => Number)
   @IsInt()

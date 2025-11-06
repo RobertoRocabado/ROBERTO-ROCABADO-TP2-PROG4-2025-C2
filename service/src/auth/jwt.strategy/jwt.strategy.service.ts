@@ -21,20 +21,17 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  // payload típico tuyo: { sub, username, rol, iat, exp }
   async validate(req: Request, payload: any) {
     if (!payload?.sub && !payload?.username) {
       throw new UnauthorizedException('Token inválido');
     }
 
-    // buscá por id (sub) o por username
     const user =
       (payload.sub && (await this.usuariosService.findById(payload.sub))) ||
       (payload.username && (await this.usuariosService.findByUsername(payload.username)));
 
     if (!user) throw new UnauthorizedException('Usuario no encontrado');
 
-    // Devolvé lo que publicaciones necesita:
     return {
       nombre:   user.nombre,
       apellido: user.apellido,

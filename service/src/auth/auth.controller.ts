@@ -1,4 +1,3 @@
-//==================== NUEVO ====================
 import {
   BadRequestException, Body, Controller, Post, Res, Req,
   UseInterceptors, UploadedFile,
@@ -11,7 +10,6 @@ import { AnyFilesInterceptor, FileInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import { extname } from 'path';
 import type { Request } from 'express';
-// import { JwtStrategy } from './jwt.strategy/jwt.strategy.service';
 import { CookieOptions } from 'express';
 
 

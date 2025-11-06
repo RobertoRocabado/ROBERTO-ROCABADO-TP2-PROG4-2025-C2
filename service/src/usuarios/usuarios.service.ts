@@ -32,8 +32,7 @@ export class UsuariosService {
       message: `${field} ya está en uso`,
     });
   }
-
-  // Cualquier otro error inesperado
+  
   throw new InternalServerErrorException({
     code: 'UNEXPECTED_ERROR',
     message: 'Ocurrió un error inesperado',
@@ -42,7 +41,6 @@ export class UsuariosService {
 
   async create(dto: CreateUsuarioDto) {
     try {
-      // opcional: pre-chequeo rápido para dar msg más claro y temprano
       const dup = await this.userModel.exists({
         $or: [
           { correo: dto.correo.toLowerCase().trim() },
@@ -50,7 +48,6 @@ export class UsuariosService {
         ],
       });
       if (dup) {
-        // determiná cuál chocó
         const u = await this.userModel.findOne({
           $or: [
             { correo: dto.correo.toLowerCase().trim() },

@@ -1,4 +1,3 @@
-// src/publicaciones/dto/create-publicacion.dto.ts
 import { IsOptional, IsString, IsNotEmpty, MaxLength } from 'class-validator';
 
 export class CreatePublicacionDto {

@@ -4,7 +4,6 @@ import {
 import { Transform } from 'class-transformer';
 
 const SOLO_LETRAS_REGEX = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/;
-// 1ra letra mayúscula, largo total >= 8, al menos 1 número (puede incluir letras y símbolos)
 const PASS_REGEX = /^(?=.*\d)[A-Z][A-Za-z\d@$!%*?&]{7,}$/;
 
 export class CreateUsuarioDto {
