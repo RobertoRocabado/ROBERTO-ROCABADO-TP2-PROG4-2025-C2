@@ -1,4 +1,4 @@
-// import { Component, computed, signal, OnInit, inject } from '@angular/core';
+// import { Component, computed, signal, OnInit, inject, WritableSignal } from '@angular/core';
 // import { CommonModule } from '@angular/common';
 // import { FormsModule } from '@angular/forms';
 // import { ActivatedRoute, Router } from '@angular/router';
@@ -21,13 +21,26 @@
 //   publicaciones = signal<Publicacion[]>([]);
 //   total = signal(0);
 //   limit = signal(10);
-//   page = signal(1);              
+//   page = signal(1);
 //   sortBy = signal<Orden>('fecha');
 //   pages = computed(() => Math.max(1, Math.ceil(this.total() / this.limit())));
 
+//   // ✅ páginas reales (1..N) para evitar arrays “huecos”
+//   pageNumbers = computed(() =>
+//     Array.from({ length: this.pages() }, (_, i) => i + 1)
+//   );
+
+//   // ✅ track único/estable para cada publicación
+//   trackPub = (index: number, p: Publicacion) => {
+//     const id = (p as any)?._id;
+//     if (id) return String(id);
+//     const created = (p as any)?.createdAt ? new Date((p as any).createdAt).getTime() : '';
+//     const correo  = (p as any)?.usuario?.correo || '';
+//     return (created && correo) ? `${created}-${correo}` : `idx-${index}`;
+//   };
+
 //   ngOnInit() {
-   
-//       // 1) Inicializar desde la URL
+//     // 1) Inicializar desde la URL
 //     const q = this.route.snapshot.queryParamMap;
 //     this.sortBy.set((q.get('sortBy') as Orden) ?? 'fecha');
 //     this.page.set(Math.max(1, +(q.get('page') ?? 1)));
@@ -38,7 +51,6 @@
 //       const s = (map.get('sortBy') as Orden) ?? this.sortBy();
 //       const p = Math.max(1, +(map.get('page') ?? this.page()));
 //       const l = Math.max(1, +(map.get('limit') ?? this.limit()));
-//       // Evitar bucles: solo seteamos si cambio algo
 //       let changed = false;
 //       if (s !== this.sortBy()) { this.sortBy.set(s); changed = true; }
 //       if (p !== this.page())   { this.page.set(p);  changed = true; }
@@ -72,8 +84,8 @@
 //         page: this.page(),
 //         limit: this.limit(),
 //       },
-//       replaceUrl: true,          
-//       queryParamsHandling: ''    
+//       replaceUrl: true,
+//       queryParamsHandling: ''
 //     });
 //   }
 
@@ -89,7 +101,7 @@
 //   cambiarOrden(v: Orden) {
 //     if (v === this.sortBy()) return;
 //     this.sortBy.set(v);
-//     this.page.set(1); // al cambiar orden, volver a pagina 1
+//     this.page.set(1);
 //     this.pushUrl();
 //     this.cargar();
 //   }
@@ -102,15 +114,11 @@
 //     this.cargar();
 //   }
 
-
-// // ==============================
-
 //   crearPub = (d: { titulo: string; descripcion: string; imagen?: File | null }) => {
 //     this.api.crear(d).subscribe({
 //       next: (pub: Publicacion) => {
-//         // Si estamos en pagina 1 y orden por fecha, anteponer; si no, recargar.
 //         if (this.sortBy() === 'fecha' && this.page() === 1) {
-//           this.publicaciones.update(list => [pub, ...list]); 
+//           this.publicaciones.update(list => [pub, ...list]);
 //           this.total.set(this.total() + 1);
 //         } else {
 //           this.cargar();
@@ -133,9 +141,7 @@
 //   unlike(id: string) {
 //     this.api.unlike(id).subscribe({
 //       next: (res: Publicacion | { notLiked: true }) => {
-//         if ('notLiked' in res) {
-//           return;
-//         }
+//         if ('notLiked' in res) return;
 //         this.publicaciones.update(list => list.map(p => p._id === id ? res : p));
 //       },
 //       error: (err) => console.error('Error unlike', err),
@@ -157,36 +163,23 @@
 //         this.publicaciones.update(list => list.filter(p => p._id !== id));
 //         this.total.set(Math.max(0, this.total() - 1));
 //         if (this.publicaciones().length === 0 && this.page() > 1) {
-//           this.go(this.page() - 1); // retrocede si quedó vacía la página
+//           this.go(this.page() - 1);
 //         }
 //       },
 //       error: (err) => console.error('Error eliminar', err),
 //     });
 //   }
 
-//   trackPub = (index: number, p: Publicacion) => {
-//   // usa _id si existe (y casteado a string por las dudas)
-//   const id = (p as any)?._id;
-//   if (id) return String(id);
-
-//   // fallback: timestamp + correo del autor si viene
-//   const created = (p as any)?.createdAt ? new Date((p as any).createdAt).getTime() : '';
-//   const correo  = (p as any)?.usuario?.correo || '';
-
-//   // último recurso: el índice (si no hay nada mejor)
-//   return (created && correo) ? `${created}-${correo}` : index;
-// };
-
 // }
 
-
-import { Component, computed, signal, OnInit, inject } from '@angular/core';
+import { Component, computed, signal, OnInit, inject, WritableSignal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PublicacionesApi, Publicacion, Orden, Page } from '../../service/publicaciones.service';
 import { PublicacionFormComponent } from '../../components/publicacion-form/publicacion-form';
 import { PublicacionCardComponent } from '../../components/publicacion-card/publicacion-card';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-publicaciones-page',
@@ -200,24 +193,21 @@ export class Publicaciones implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
 
-  publicaciones = signal<Publicacion[]>([]);
-  total = signal(0);
-  limit = signal(10);
-  page = signal(1);
+  // señales tipadas
+  publicaciones: WritableSignal<Publicacion[]> = signal<Publicacion[]>([]);
+  total = signal<number>(0);
+  limit = signal<number>(10);
+  page = signal<number>(1);
   sortBy = signal<Orden>('fecha');
+
   pages = computed(() => Math.max(1, Math.ceil(this.total() / this.limit())));
+  pageNumbers = computed(() => Array.from({ length: this.pages() }, (_, i) => i + 1));
 
-  // ✅ páginas reales (1..N) para evitar arrays “huecos”
-  pageNumbers = computed(() =>
-    Array.from({ length: this.pages() }, (_, i) => i + 1)
-  );
-
-  // ✅ track único/estable para cada publicación
+  // track estable por publicación
   trackPub = (index: number, p: Publicacion) => {
-    const id = (p as any)?._id;
-    if (id) return String(id);
-    const created = (p as any)?.createdAt ? new Date((p as any).createdAt).getTime() : '';
-    const correo  = (p as any)?.usuario?.correo || '';
+    if (p?._id) return String(p._id);
+    const created = p?.createdAt ? new Date(p.createdAt).getTime() : '';
+    const correo = p?.usuario?.correo || '';
     return (created && correo) ? `${created}-${correo}` : `idx-${index}`;
   };
 
@@ -228,7 +218,7 @@ export class Publicaciones implements OnInit {
     this.page.set(Math.max(1, +(q.get('page') ?? 1)));
     this.limit.set(Math.max(1, +(q.get('limit') ?? 10)));
 
-    // 2) Reaccionar a cambios en la URL (back/forward del navegador)
+    // 2) Reaccionar a cambios en la URL (back/forward)
     this.route.queryParamMap.subscribe(map => {
       const s = (map.get('sortBy') as Orden) ?? this.sortBy();
       const p = Math.max(1, +(map.get('page') ?? this.page()));
@@ -251,10 +241,10 @@ export class Publicaciones implements OnInit {
       limit: this.limit(),
     }).subscribe({
       next: (r: Page<Publicacion>) => {
-        this.publicaciones.set(r.items);
+        this.publicaciones.set(r.items as Publicacion[]);
         this.total.set(r.total);
       },
-      error: err => console.error('Error listando publicaciones', err),
+      error: (err) => console.error('Error listando publicaciones', err),
     });
   }
 
@@ -296,13 +286,11 @@ export class Publicaciones implements OnInit {
     this.cargar();
   }
 
-  // ==============================
-
   crearPub = (d: { titulo: string; descripcion: string; imagen?: File | null }) => {
     this.api.crear(d).subscribe({
       next: (pub: Publicacion) => {
         if (this.sortBy() === 'fecha' && this.page() === 1) {
-          this.publicaciones.update(list => [pub, ...list]);
+          this.publicaciones.update((list: Publicacion[]) => [pub, ...list]);
           this.total.set(this.total() + 1);
         } else {
           this.cargar();
@@ -313,38 +301,52 @@ export class Publicaciones implements OnInit {
   };
 
   like(id: string) {
-    this.api.like(id).subscribe({
-      next: (res: Publicacion | { alreadyLiked: true }) => {
-        if ('alreadyLiked' in res) return;
-        this.publicaciones.update(list => list.map(p => p._id === id ? res : p));
-      },
-      error: (err) => console.error('Error like', err),
-    });
+    (this.api.like(id) as unknown as Observable<Publicacion | { alreadyLiked: true }>)
+      .subscribe(
+        (res) => {
+          if ((res as any)?.alreadyLiked) return;
+          const pub = res as Publicacion;
+          this.publicaciones.update((list: Publicacion[]) =>
+            list.map(p => p._id === id ? pub : p)
+          );
+        },
+        (err) => console.error('Error like', err)
+      );
   }
 
   unlike(id: string) {
-    this.api.unlike(id).subscribe({
-      next: (res: Publicacion | { notLiked: true }) => {
-        if ('notLiked' in res) return;
-        this.publicaciones.update(list => list.map(p => p._id === id ? res : p));
-      },
-      error: (err) => console.error('Error unlike', err),
-    });
+    (this.api.unlike(id) as unknown as Observable<Publicacion | { notLiked: true }>)
+      .subscribe(
+        (res) => {
+          if ((res as any)?.notLiked) return;
+          const pub = res as Publicacion;
+          this.publicaciones.update((list: Publicacion[]) =>
+            list.map(p => p._id === id ? pub : p)
+          );
+        },
+        (err) => console.error('Error unlike', err)
+      );
   }
 
   comentar(e: { id: string; texto: string }) {
-    this.api.comentar(e.id, e.texto).subscribe({
-      next: (pub: Publicacion) => {
-        this.publicaciones.update(list => list.map(p => p._id === pub._id ? pub : p));
-      },
-      error: (err) => console.error('Error comentar', err),
-    });
+    (this.api.comentar(e.id, e.texto) as unknown as Observable<Publicacion>)
+      .subscribe(
+        (pub) => {
+          this.publicaciones.update((list: Publicacion[]) =>
+            list.map(p => p._id === pub._id ? pub : p)
+          );
+        },
+        (err) => console.error('Error comentar', err)
+      );
   }
 
   eliminar(id: string) {
     this.api.eliminar(id).subscribe({
-      next: () => {
-        this.publicaciones.update(list => list.filter(p => p._id !== id));
+      next: (r: { ok: boolean }) => {
+        if (!r?.ok) return;
+        this.publicaciones.update((list: Publicacion[]) =>
+          list.filter(p => p._id !== id)
+        );
         this.total.set(Math.max(0, this.total() - 1));
         if (this.publicaciones().length === 0 && this.page() > 1) {
           this.go(this.page() - 1);
