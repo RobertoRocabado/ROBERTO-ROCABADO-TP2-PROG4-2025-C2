@@ -19,11 +19,14 @@ import { CookieOptions } from 'express';
 export class AuthController {
   constructor(private readonly service: AuthService) {}
 
+  isProd = process.env.NODE_ENV === 'production';
+
   private cookieBase: CookieOptions = {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     // sameSite: 'lax' as const,
-    sameSite: 'none',
+    sameSite: this.isProd ? 'none' : 'lax',
+    // sameSite: 'none',
     path: '/',
   };
 
