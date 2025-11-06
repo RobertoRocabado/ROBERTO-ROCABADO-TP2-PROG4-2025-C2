@@ -78,7 +78,7 @@ export class Registro {
       this.fotoPreview = null;
       return;
     }
-    const maxMB = 3;
+    const maxMB = 2;
     if (file.size > maxMB * 1024 * 1024) {
       this.fotoError = `La imagen no debe superar ${maxMB}MB.`;
       this.fotoFile = null;

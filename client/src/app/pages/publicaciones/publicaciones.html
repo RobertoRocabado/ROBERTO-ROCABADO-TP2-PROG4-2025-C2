@@ -1,45 +1,3 @@
-<!-- <section class="container">
-
-   <header class="toolbar">
-  <h2>Publicaciones</h2>
-  <div class="controls">
-    <label>Orden:
-      <select [ngModel]="sortBy()" (ngModelChange)="cambiarOrden($event)">
-        <option value="fecha">Fecha (recientes)</option>
-        <option value="likes">Me gusta</option>
-      </select>
-    </label>
-  </div>
-</header>
-
-<app-publicacion-form (crear)="crearPub($event)"></app-publicacion-form>
-
-@if (publicaciones().length === 0) {
-  <p class="empty">No hay publicaciones todavía.</p>
-} @else {
-  @for (p of publicaciones(); track (p._id ?? p.createdAt ?? $index)) {
-    <app-publicacion-card
-      [pub]="p"
-      [esPropia]="false"
-      (like)="like($event)"
-      (unlike)="unlike($event)"
-      (comentar)="comentar($event)"
-      (eliminar)="eliminar($event)" />
-  }
-}
-
-@if (pages() > 1) {
-  <nav class="pager">
-    @for (i of [].constructor(pages()); track i; let idx = $index) {
-      <button [class.active]="(idx + 1) === page()" (click)="go(idx + 1)">
-        {{ idx + 1 }}
-      </button>
-    }
-  </nav>
-}
-
-</section> -->
-
 <section class="container">
 
   <header class="toolbar">
@@ -59,7 +17,6 @@
   @if (publicaciones().length === 0) {
     <p class="empty">No hay publicaciones todavía.</p>
   } @else {
-    <!-- ✅ track estable por publicación -->
     @for (p of publicaciones(); track trackPub($index, p)) {
       <app-publicacion-card
         [pub]="p"
@@ -73,7 +30,6 @@
 
   @if (pages() > 1) {
     <nav class="pager">
-      <!-- ✅ sin arrays huecos; claves = número de página -->
       @for (n of pageNumbers(); track n) {
         <button [class.active]="n === page()" (click)="go(n)">
           {{ n }}

@@ -2,7 +2,7 @@ import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { tap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
-import { environment } from '../../environment';
+import { environment } from '../../environments';
 import { isPlatformBrowser } from '@angular/common';
 
 export interface Usuario {
@@ -46,52 +46,44 @@ export class AuthService {
   }
 
   registro(payload: FormData): Observable<any> {
-    // return this.http.post(`${this.base}/registro`, payload, { withCredentials: true });
-    return this.http.post(`${this.base}/registro`, payload, { withCredentials: environment.withCredentials });
+    return this.http.post(`${this.base}/registro`, payload, {
+      withCredentials: environment.withCredentials,
+    });
   }
 
   login(login: string, password: string) {
     return this.http
-      .post<{ user: Usuario }>(`${this.base}/login`, { login, password }, { withCredentials: environment.withCredentials })
+      .post<{ user: Usuario }>(
+        `${this.base}/login`,
+        { login, password },
+        { withCredentials: environment.withCredentials }
+      )
       .pipe(tap((res) => this.persistUser(res.user)));
   }
-  // login(login: string, password: string) {
-  //   return this.http
-  //     .post<{ user: Usuario }>(`${this.base}/login`, { login, password }, { withCredentials: true })
-  //     .pipe(tap((res) => this.persistUser(res.user)));
-  // }
 
-  // autorizar() {
-  //   return this.http
-  //     .get<{ ok: boolean; user?: Usuario }>(`${this.base}/me`, { withCredentials: true })
-  //     .pipe(
-  //       tap((res) => {
-  //         if (res.ok && res.user) {
-  //           this.setUsuario(res.user);
-  //         }
-  //       })
-  //     );
-  // }
   autorizar() {
     return this.http
-      .get<{ ok: boolean; user?: Usuario }>(`${this.base}/me`, { withCredentials: environment.withCredentials })
-      .pipe(tap((res) => { if (res.ok && res.user) this.setUsuario(res.user); }));
+      .get<{ ok: boolean; user?: Usuario }>(`${this.base}/me`, {
+        withCredentials: environment.withCredentials,
+      })
+      .pipe(
+        tap((res) => {
+          if (res.ok && res.user) this.setUsuario(res.user);
+        })
+      );
   }
 
-  // refrescar() {
-  //   return this.http.post(`${this.base}/refrescar`, {}, { withCredentials: true });
-  // }
   refrescar() {
-    return this.http.post(`${this.base}/refrescar`, {}, { withCredentials: environment.withCredentials });
+    return this.http.post(
+      `${this.base}/refrescar`,
+      {},
+      { withCredentials: environment.withCredentials }
+    );
   }
 
-  // logout() {
-  //   return this.http
-  //     .post(`${this.base}/logout`, {}, { withCredentials: true })
-  //     .pipe(tap(() => this.persistUser(null)));
-  // }
   logout() {
-    return this.http.post(`${this.base}/logout`, {}, { withCredentials: environment.withCredentials })
+    return this.http
+      .post(`${this.base}/logout`, {}, { withCredentials: environment.withCredentials })
       .pipe(tap(() => this.persistUser(null)));
   }
 

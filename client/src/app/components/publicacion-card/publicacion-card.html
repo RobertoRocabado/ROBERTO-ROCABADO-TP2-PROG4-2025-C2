@@ -16,7 +16,7 @@
     <button class="ghost danger" (click)="eliminar.emit(pub._id)">Eliminar</button>
     }
   </header>
-
+  <hr>
   <h3 class="titulo">{{ pub.titulo }}</h3>
   <p class="descripcion">{{ pub.descripcion }}</p>
 
@@ -39,7 +39,6 @@
     <button (click)="enviarComentario()">Enviar</button>
   </div>
   }
-
   <section class="comentarios">
     @if (pub.comentarios.length > 0) {
     <h4>Comentarios ({{ pub.comentarios.length }})</h4>

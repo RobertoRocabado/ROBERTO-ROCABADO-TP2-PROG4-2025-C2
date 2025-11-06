@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../environment';
 import { Usuario } from './auth.service';
 
 @Injectable({ providedIn: 'root' })

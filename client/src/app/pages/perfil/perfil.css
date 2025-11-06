@@ -5,25 +5,31 @@
 }
 
 .perfil-card {
-    display: flex;
-    gap: 1rem;
-    align-items: center;
+    display: grid;
+    grid-template-columns: 1fr 1fr; 
+    grid-template-rows: auto 1fr;  
+    grid-template-areas:
+        "nombre nombre"
+        "info   foto";
+    gap: 1.5rem;
     background: #fafafa;
-    padding: 1rem;
-    border-radius: 8px;
+    padding: 2rem;
+    border-radius: 12px;
     margin-bottom: 2rem;
 }
 
 .foto-perfil {
-    width: 500px;
+    grid-area: foto;
+    width: 100%;
     height: 320px;
     border-radius: 9px;
     object-fit: cover;
-    margin: 5px auto;
 }
 
-.info > p{
-    font-size: 18px;
+.info {
+    font-size: 20px;
+    margin: auto;
+    grid-area: info;
 }
 
 .titulo-seccion {
@@ -82,4 +88,11 @@
 
 .fecha-comentario {
     color: #777;
+}
+
+.nombreYapellido{
+    grid-area: nombre;
+    font-size: 40px;
+    text-transform: lowercase;
+    margin: auto;
 }

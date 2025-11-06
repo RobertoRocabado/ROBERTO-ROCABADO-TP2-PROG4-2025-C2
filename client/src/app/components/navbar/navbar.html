@@ -26,9 +26,12 @@
           <p class="email">
             {{ auth.usuario.correo }}
           </p>
-          @if(auth.usuario.rol === 'administrador'){
-          <p class="rol">Administrador</p>
-          }
+          <p class="rol">{{ auth.usuario.rol }}</p>
+          <!-- @if(auth.usuario.rol === 'administrador'){
+          <p class="rol">{{ auth.usuario.rol }}</p>
+          } @else {
+            <p class="rol">{{ auth.usuario.rol }}</p>
+          } -->
         </div>
       </div>
     </div>

@@ -4,7 +4,7 @@
 
   <!-- Nombre -->
   <label>Nombre</label>
-  <input type="text" name="nombre" [(ngModel)]="form.nombre" required appSoloLetras #nombre="ngModel" />
+  <input type="text" name="nombre" [(ngModel)]="form.nombre" required appCapitalizarPrimera appSoloLetras #nombre="ngModel" />
   @if ((nombre.invalid && (nombre.dirty || nombre.touched)) || (submitted && nombre.invalid)) {
   <div class="error">
     @if (nombre.errors?.['required']) { <span>El nombre es obligatorio.</span> }
@@ -14,7 +14,7 @@
 
   <!-- Apellido -->
   <label>Apellido</label>
-  <input type="text" name="apellido" [(ngModel)]="form.apellido" required appSoloLetras #apellido="ngModel" />
+  <input type="text" name="apellido" [(ngModel)]="form.apellido" required appCapitalizarPrimera appSoloLetras #apellido="ngModel" />
   @if ((apellido.invalid && (apellido.dirty || apellido.touched)) || (submitted && apellido.invalid)) {
   <div class="error">
     @if (apellido.errors?.['required']) { <span>El apellido es obligatorio.</span> }

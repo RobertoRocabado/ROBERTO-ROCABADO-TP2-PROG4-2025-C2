@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../environment';
+import { environment } from '../../environments';
 
 // —— Tipos públicos (exportados) ——
 export type Orden = 'fecha' | 'likes';
@@ -104,12 +104,12 @@ export class PublicacionesApi {
   //     { withCredentials: true }
   //   );
   // }
-  listar(opts: { sortBy?: Orden; page?: number; limit?: number; userCorreo?: string; }) {
+  listar(opts: { sortBy?: Orden; page?: number; limit?: number; userCorreo?: string }) {
     let params = new HttpParams();
-    if (opts.sortBy)   params = params.set('sortBy', opts.sortBy);
-    if (opts.page!=null)  params = params.set('page', String(opts.page));
-    if (opts.limit!=null) params = params.set('limit', String(opts.limit));
-    if (opts.userCorreo)  params = params.set('userCorreo', opts.userCorreo);
+    if (opts.sortBy) params = params.set('sortBy', opts.sortBy);
+    if (opts.page != null) params = params.set('page', String(opts.page));
+    if (opts.limit != null) params = params.set('limit', String(opts.limit));
+    if (opts.userCorreo) params = params.set('userCorreo', opts.userCorreo);
 
     return this.http.get<Page<Publicacion>>(this.base, {
       params,
@@ -117,16 +117,38 @@ export class PublicacionesApi {
     });
   }
 
-  crear(data: { titulo: string; descripcion: string; imagen?: File | null; }) {
+  crear(data: { titulo: string; descripcion: string; imagen?: File | null }) {
     const fd = new FormData();
     fd.append('titulo', data.titulo);
     fd.append('descripcion', data.descripcion);
     if (data.imagen) fd.append('imagen', data.imagen);
-    return this.http.post<Publicacion>(this.base, fd, { withCredentials: environment.withCredentials });
+    return this.http.post<Publicacion>(this.base, fd, {
+      withCredentials: environment.withCredentials,
+    });
   }
 
-  like(id: string)   { return this.http.post(`${this.base}/${id}/likes`, {}, { withCredentials: environment.withCredentials }); }
-  unlike(id: string) { return this.http.delete(`${this.base}/${id}/likes`, { withCredentials: environment.withCredentials }); }
-  eliminar(id: string) { return this.http.delete<{ ok: boolean }>(`${this.base}/${id}`, { withCredentials: environment.withCredentials }); }
-  comentar(id: string, texto: string) { return this.http.post(`${this.base}/${id}/comentarios`, { texto }, { withCredentials: environment.withCredentials }); }
+  like(id: string) {
+    return this.http.post(
+      `${this.base}/${id}/likes`,
+      {},
+      { withCredentials: environment.withCredentials }
+    );
+  }
+  unlike(id: string) {
+    return this.http.delete(`${this.base}/${id}/likes`, {
+      withCredentials: environment.withCredentials,
+    });
+  }
+  eliminar(id: string) {
+    return this.http.delete<{ ok: boolean }>(`${this.base}/${id}`, {
+      withCredentials: environment.withCredentials,
+    });
+  }
+  comentar(id: string, texto: string) {
+    return this.http.post(
+      `${this.base}/${id}/comentarios`,
+      { texto },
+      { withCredentials: environment.withCredentials }
+    );
+  }
 }
