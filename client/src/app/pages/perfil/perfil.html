@@ -4,6 +4,7 @@
     @if (usuario(); as u) {
     <div class="perfil-card">
         <h2 class="nombreYapellido"><strong>{{ u.nombre }} {{ u.apellido }}</strong></h2>
+        <hr>
         <div class="info">
             <p><strong>Usuario:</strong> @{{ u.username }}</p>
             <p><strong>Correo:</strong> {{ u.correo }}</p>
