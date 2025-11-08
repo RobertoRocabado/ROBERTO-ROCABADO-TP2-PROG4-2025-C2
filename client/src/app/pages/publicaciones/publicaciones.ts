@@ -1,180 +1,184 @@
-import { Component, computed, signal, OnInit, inject, WritableSignal } from '@angular/core';
+import { Component, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { PublicacionesApi, Publicacion, Orden, Page } from '../../service/publicaciones.service';
-import { PublicacionFormComponent } from '../../components/publicacion-form/publicacion-form';
+import Swal from 'sweetalert2';
+import { AuthService } from '../../service/auth.service';
+import { PublicacionesApi, Publicacion, Orden, Page,} from '../../service/publicaciones.service';
 import { PublicacionCardComponent } from '../../components/publicacion-card/publicacion-card';
-import { Observable } from 'rxjs';
+import { PublicacionFormComponent } from '../../components/publicacion-form/publicacion-form';
 
 @Component({
-  selector: 'app-publicaciones-page',
+  selector: 'app-publicaciones',
   standalone: true,
-  imports: [CommonModule, FormsModule, PublicacionFormComponent, PublicacionCardComponent],
+  imports: [CommonModule, FormsModule, PublicacionCardComponent, PublicacionFormComponent],
   templateUrl: './publicaciones.html',
-  styleUrls: ['./publicaciones.css']
+  styleUrls: ['./publicaciones.css'],
 })
-export class Publicaciones implements OnInit {
-  private api = inject(PublicacionesApi);
-  private route = inject(ActivatedRoute);
-  private router = inject(Router);
-
-  // señales tipadas
-  publicaciones: WritableSignal<Publicacion[]> = signal<Publicacion[]>([]);
-  total = signal<number>(0);
-  limit = signal<number>(10);
-  page = signal<number>(1);
+export class Publicaciones {
+  cargando = signal(false);
   sortBy = signal<Orden>('fecha');
+  page = signal(1);
 
-  pages = computed(() => Math.max(1, Math.ceil(this.total() / this.limit())));
+  private readonly LIMIT = 6;
+
+  publicaciones = signal<Publicacion[]>([]);
+  total = signal(0);
+
+  meCorreo = computed(() => this.auth.usuario?.correo ?? null);
+  esAdmin = computed(() => this.auth.isAdmin());
+
+  pages = computed(() => Math.max(1, Math.ceil(this.total() / this.LIMIT)));
   pageNumbers = computed(() => Array.from({ length: this.pages() }, (_, i) => i + 1));
 
-  trackPub = (index: number, p: Publicacion) => {
-    if (p?._id) return String(p._id);
-    const created = p?.createdAt ? new Date(p.createdAt).getTime() : '';
-    const correo = p?.usuario?.correo || '';
-    return (created && correo) ? `${created}-${correo}` : `idx-${index}`;
-  };
-
-  ngOnInit() {
-    const q = this.route.snapshot.queryParamMap;
-    this.sortBy.set((q.get('sortBy') as Orden) ?? 'fecha');
-    this.page.set(Math.max(1, +(q.get('page') ?? 1)));
-    this.limit.set(Math.max(1, +(q.get('limit') ?? 10)));
-
-    this.route.queryParamMap.subscribe(map => {
-      const s = (map.get('sortBy') as Orden) ?? this.sortBy();
-      const p = Math.max(1, +(map.get('page') ?? this.page()));
-      const l = Math.max(1, +(map.get('limit') ?? this.limit()));
-      let changed = false;
-      if (s !== this.sortBy()) { this.sortBy.set(s); changed = true; }
-      if (p !== this.page())   { this.page.set(p);  changed = true; }
-      if (l !== this.limit())  { this.limit.set(l); changed = true; }
-      if (changed) this.cargar();
-    });
-
+  constructor(
+    private api: PublicacionesApi,
+    private auth: AuthService,
+  ) {
     this.cargar();
   }
 
-  cargar() {
-    this.api.listar({
-      sortBy: this.sortBy(),
-      page: this.page(),
-      limit: this.limit(),
-    }).subscribe({
-      next: (r: Page<Publicacion>) => {
-        this.publicaciones.set(r.items as Publicacion[]);
-        this.total.set(r.total);
-      },
-      error: (err) => console.error('Error listando publicaciones', err),
-    });
+  async cargar() {
+    this.cargando.set(true);
+    try {
+      const res = await this.api
+        .listar({ sortBy: this.sortBy(), page: this.page(), limit: this.LIMIT })
+        .toPromise();
+      const page = (res as Page<Publicacion>) ?? { items: [], total: 0, offset: 0, limit: this.LIMIT };
+      this.publicaciones.set(page.items || []);
+      this.total.set(page.total || 0);
+    } finally {
+      this.cargando.set(false);
+    }
   }
 
-  private pushUrl() {
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: {
-        sortBy: this.sortBy(),
-        page: this.page(),
-        limit: this.limit(),
-      },
-      replaceUrl: true,
-      queryParamsHandling: ''
-    });
-  }
-
-  go(p: number) {
-    const max = Math.max(1, this.pages());
-    const clamped = Math.min(Math.max(1, p), max);
-    if (clamped === this.page()) return;
-    this.page.set(clamped);
-    this.pushUrl();
-    this.cargar();
-  }
-
-  cambiarOrden(v: Orden) {
-    if (v === this.sortBy()) return;
-    this.sortBy.set(v);
+  cambiarOrden(o: Orden) {
+    if (this.sortBy() === o) return;
+    this.sortBy.set(o);
     this.page.set(1);
-    this.pushUrl();
     this.cargar();
   }
 
-  cambiarLimit(nuevo: number) {
-    if (nuevo === this.limit()) return;
-    this.limit.set(nuevo);
-    this.page.set(1);
-    this.pushUrl();
+  go(n: number) {
+    if (n < 1 || n > this.pages()) return;
+    this.page.set(n);
     this.cargar();
   }
 
-  crearPub = (d: { titulo: string; descripcion: string; imagen?: File | null }) => {
-    this.api.crear(d).subscribe({
-      next: (pub: Publicacion) => {
-        if (this.sortBy() === 'fecha' && this.page() === 1) {
-          this.publicaciones.update((list: Publicacion[]) => [pub, ...list]);
-          this.total.set(this.total() + 1);
-        } else {
-          this.cargar();
-        }
-      },
-      error: (err) => console.error('Error creando publicación', err),
+  trackPub = (_: number, p: Publicacion) => p._id;
+
+  esPropia(pub: Publicacion): boolean {
+    const me = this.meCorreo();
+    return (!!me && pub.usuario?.correo === me) || this.esAdmin();
+  }
+
+  async crearPub(payload: { titulo: string; descripcion: string; imagen?: File | null }) {
+    try {
+      await this.api.crear(payload).toPromise();
+      this.page.set(1); 
+      this.cargar();
+    } catch {
+      Swal.fire('Error', 'No se pudo crear la publicación', 'error');
+    }
+  }
+
+  async like(id: string) {
+    const list = [...this.publicaciones()];
+    const i = list.findIndex((p) => p._id === id);
+    if (i === -1) return;
+    const me = this.meCorreo();
+    if (!me) return;
+
+    if (list[i].likedBy?.includes(me)) return;
+
+    const prev = { ...list[i] };
+    list[i].likedBy = [...(list[i].likedBy ?? []), me];
+    list[i].likesCount = (list[i].likesCount ?? 0) + 1;
+    this.publicaciones.set(list);
+
+    try {
+      const updated = await this.api.like(id).toPromise();
+      if ((updated as any)?.alreadyLiked) {
+        list[i] = prev;
+      } else {
+        list[i] = { ...list[i], ...(updated as Publicacion) };
+      }
+      this.publicaciones.set(list);
+    } catch {
+      list[i] = prev;
+      this.publicaciones.set(list);
+    }
+  }
+
+  async unlike(id: string) {
+    const list = [...this.publicaciones()];
+    const i = list.findIndex((p) => p._id === id);
+    if (i === -1) return;
+    const me = this.meCorreo();
+    if (!me) return;
+
+    if (!list[i].likedBy?.includes(me)) return;
+
+    const prev = { ...list[i] };
+    list[i].likedBy = (list[i].likedBy ?? []).filter((x) => x !== me);
+    list[i].likesCount = Math.max(0, (list[i].likesCount ?? 0) - 1);
+    this.publicaciones.set(list);
+
+    try {
+      const updated = await this.api.unlike(id).toPromise();
+      if ((updated as any)?.notLiked) {
+        list[i] = prev;
+      } else {
+        list[i] = { ...list[i], ...(updated as Publicacion) };
+      }
+      this.publicaciones.set(list);
+    } catch {
+      list[i] = prev;
+      this.publicaciones.set(list);
+    }
+  }
+
+  async comentar(payload: { id: string; texto: string }) {
+    try {
+      const updated = (await this.api.comentar(payload.id, payload.texto).toPromise()) as Publicacion;
+      const list = [...this.publicaciones()];
+      const i = list.findIndex((p) => p._id === payload.id);
+      if (i !== -1) {
+        list[i] = { ...list[i], ...updated };
+        this.publicaciones.set(list);
+      }
+    } catch {
+      Swal.fire('Error', 'No se pudo comentar', 'error');
+    }
+  }
+
+  async eliminar(id: string) {
+    const confirm = await Swal.fire({
+      title: '¿Eliminar publicación?',
+      text: 'Solo el administrador podra deshacer esta accion.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Si, eliminar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#b1acac',
     });
-  };
 
-  like(id: string) {
-    (this.api.like(id) as unknown as Observable<Publicacion | { alreadyLiked: true }>)
-      .subscribe(
-        (res) => {
-          if ((res as any)?.alreadyLiked) return;
-          const pub = res as Publicacion;
-          this.publicaciones.update((list: Publicacion[]) =>
-            list.map(p => p._id === id ? pub : p)
-          );
-        },
-        (err) => console.error('Error like', err)
-      );
-  }
+    if (!confirm.isConfirmed) return;
 
-  unlike(id: string) {
-    (this.api.unlike(id) as unknown as Observable<Publicacion | { notLiked: true }>)
-      .subscribe(
-        (res) => {
-          if ((res as any)?.notLiked) return;
-          const pub = res as Publicacion;
-          this.publicaciones.update((list: Publicacion[]) =>
-            list.map(p => p._id === id ? pub : p)
-          );
-        },
-        (err) => console.error('Error unlike', err)
-      );
-  }
+    const prevList = [...this.publicaciones()];
+    const newList = prevList.filter((p) => p._id !== id);
+    this.publicaciones.set(newList);
+    this.total.update((t) => Math.max(0, t - 1));
 
-  comentar(e: { id: string; texto: string }) {
-    (this.api.comentar(e.id, e.texto) as unknown as Observable<Publicacion>)
-      .subscribe(
-        (pub) => {
-          this.publicaciones.update((list: Publicacion[]) =>
-            list.map(p => p._id === pub._id ? pub : p)
-          );
-        },
-        (err) => console.error('Error comentar', err)
-      );
-  }
-
-  eliminar(id: string) {
-    this.api.eliminar(id).subscribe({
-      next: (r: { ok: boolean }) => {
-        if (!r?.ok) return;
-        this.publicaciones.update((list: Publicacion[]) =>
-          list.filter(p => p._id !== id)
-        );
-        this.total.set(Math.max(0, this.total() - 1));
-        if (this.publicaciones().length === 0 && this.page() > 1) {
-          this.go(this.page() - 1);
-        }
-      },
-      error: (err) => console.error('Error eliminar', err),
-    });
+    try {
+      await this.api.eliminar(id).toPromise();
+      if (this.publicaciones().length === 0 && this.page() > 1) {
+        this.go(this.page() - 1);
+      }
+      Swal.fire('Eliminada', 'La publicación fue eliminada', 'success');
+    } catch {
+      this.publicaciones.set(prevList);
+      this.total.update((t) => t + 1);
+      Swal.fire('Error', 'No se pudo eliminar la publicación', 'error');
+    }
   }
 }

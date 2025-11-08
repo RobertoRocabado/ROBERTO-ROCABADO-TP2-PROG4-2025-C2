@@ -13,22 +13,25 @@
     </div>
 
     @if (esPropia) {
-    <button class="ghost danger" (click)="eliminar.emit(pub._id)">Eliminar</button>
+    <button class="ghost" (click)="eliminar.emit(pub._id)">Eliminar</button>
     }
   </header>
   <hr>
-  <h3 class="titulo">{{ pub.titulo }}</h3>
-  <p class="descripcion">{{ pub.descripcion }}</p>
+  
+    <h3 class="titulo">{{ pub.titulo }}</h3>
+    <p class="descripcion">{{ pub.descripcion }}</p>
 
-  @if (pub.imagenUrl) {
-  <img class="imagen" [src]="pub.imagenUrl!" alt="imagen publicación">
-  }
+    @if (pub.imagenUrl) {
+    <img class="imagen" [src]="pub.imagenUrl!" alt="imagen publicación">
+    }
+  
 
+  <hr>
   <footer class="acciones">
     @if (!dioLike) {
-    <button (click)="like.emit(pub._id)">👍 Me gusta ({{ pub.likesCount }})</button>
+    <button class="like" (click)="like.emit(pub._id)">👍 Me gusta ({{ pub.likesCount }})</button>
     } @else {
-    <button class="liked" (click)="unlike.emit(pub._id)">💔 Quitar like ({{ pub.likesCount }})</button>
+    <button class="liked" (click)="unlike.emit(pub._id)">👎 Quitar Me Gusta ({{ pub.likesCount }})</button>
     }
     <button class="ghost" (click)="toggleComentar()">📩 Comentar</button>
   </footer>

@@ -3,7 +3,6 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments';
 
-// —— Tipos públicos (exportados) ——
 export type Orden = 'fecha' | 'likes';
 
 export interface Autor {

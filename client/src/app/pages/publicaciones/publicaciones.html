@@ -1,5 +1,4 @@
 <section class="container">
-
   <header class="toolbar">
     <h2>Publicaciones</h2>
     <div class="controls">
@@ -14,29 +13,27 @@
 
   <app-publicacion-form (crear)="crearPub($event)"></app-publicacion-form>
 
-  @if (publicaciones().length === 0) {
-    <p class="empty">No hay publicaciones todavía.</p>
+  @if (cargando()) {
+  <p class="empty">Cargando…</p>
   } @else {
-    @for (p of publicaciones(); track trackPub($index, p)) {
-      <app-publicacion-card
-        [pub]="p"
-        [esPropia]="false"
-        (like)="like($event)"
-        (unlike)="unlike($event)"
-        (comentar)="comentar($event)"
-        (eliminar)="eliminar($event)" />
-    }
+  @if (publicaciones().length === 0) {
+  <p class="empty">No hay publicaciones todavía.</p>
+  } @else {
+  @for (p of publicaciones(); track trackPub($index, p)) {
+  <app-publicacion-card [pub]="p" [esPropia]="esPropia(p)" [meCorreo]="meCorreo()" (like)="like($event)"
+    (unlike)="unlike($event)" (comentar)="comentar($event)" (eliminar)="eliminar($event)">
+  </app-publicacion-card>
+  }
   }
 
   @if (pages() > 1) {
-    <nav class="pager">
-      @for (n of pageNumbers(); track n) {
-        <button [class.active]="n === page()" (click)="go(n)">
-          {{ n }}
-        </button>
-      }
-    </nav>
+  <nav class="pager">
+    @for (n of pageNumbers(); track n) {
+    <button [class.active]="n === page()" (click)="go(n)">
+      {{ n }}
+    </button>
+    }
+  </nav>
   }
-
+  }
 </section>
-

@@ -43,11 +43,4 @@ export class PublicacionCardComponent {
     return (n[0] ?? '').toUpperCase() + (a[0] ?? '').toUpperCase();
   }
 
-  // trackComentario = (index: number, c: any) => {
-  //   const id = c?._id;
-  //   if (id) return String(id);
-  //   const created = c?.createdAt ? new Date(c.createdAt).getTime() : '';
-  //   const correo = c?.autor?.correo || '';
-  //   return created && correo ? `${created}-${correo}` : index;
-  // };
 }
