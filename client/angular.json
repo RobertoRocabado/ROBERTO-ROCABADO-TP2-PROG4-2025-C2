@@ -24,7 +24,7 @@
             ],
             "styles": ["src/styles.css"],
             "server": "src/main.server.ts",
-            "outputMode": "server",
+            
             "ssr": {
               "entry": "src/server.ts"
             },
@@ -45,11 +45,11 @@
                 }
               ],
               "fileReplacements": [
-      {
-        "replace": "src/environments/index.ts",
-        "with": "src/environments/environment.production.ts"
-      }
-    ],
+                {
+                  "replace": "src/environments/index.ts",
+                  "with": "src/environments/environment.production.ts"
+                }
+              ],
               "outputHashing": "all",
               "prerender": false
             },
