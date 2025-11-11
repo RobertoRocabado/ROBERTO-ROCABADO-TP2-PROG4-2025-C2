@@ -11,7 +11,7 @@
     "build:vercel": "ng build --configuration=production"
   },
   "engines": {
-    "node": ">=20"
+    "node": "20.x"
   },
   "prettier": {
     "printWidth": 100,

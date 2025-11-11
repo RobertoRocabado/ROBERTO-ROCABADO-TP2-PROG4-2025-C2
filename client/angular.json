@@ -27,7 +27,8 @@
             "outputMode": "server",
             "ssr": {
               "entry": "src/server.ts"
-            }
+            },
+            "prerender": false
           },
           "configurations": {
             "production": {
@@ -49,7 +50,8 @@
         "with": "src/environments/environment.production.ts"
       }
     ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "prerender": false
             },
             "development": {
               "optimization": false,
