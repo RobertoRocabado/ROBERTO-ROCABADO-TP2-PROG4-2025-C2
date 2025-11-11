@@ -1,6 +1,4 @@
-import {
-  IsEmail, IsOptional, IsString, MinLength, Matches, IsDateString, IsIn, IsNotEmpty,
-} from 'class-validator';
+import { IsEmail, IsOptional, IsString, MinLength, Matches, IsDateString, IsIn, IsNotEmpty } from 'class-validator';
 import { Transform } from 'class-transformer';
 
 const SOLO_LETRAS_REGEX = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/;

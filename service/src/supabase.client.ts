@@ -1,4 +1,4 @@
-import 'dotenv/config'; // 👈 fuerza a cargar el .env antes de crear el cliente
+import 'dotenv/config'; 
 import { createClient } from '@supabase/supabase-js';
 
 if (!process.env.SUPABASE_URL) {

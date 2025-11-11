@@ -1,4 +1,3 @@
-// auth/dto/login.dto.ts
 import { IsString, IsNotEmpty } from 'class-validator';
 import { Transform } from 'class-transformer';
 

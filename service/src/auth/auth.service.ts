@@ -4,13 +4,17 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { supabase } from '../supabase.client';
 
+
+const TOKEN_TIEMPO = '30m'; // 15m para 15 minutos
+const JWT_SECRET = process.env.JWT_SECRET ?? 'secreto-dev'; 
+
+
 @Injectable()
 export class AuthService {
-  private bucket = process.env.SUPABASE_BUCKET_AVATARS!; // "avatars" el nombre del bucket de Supabase
+  private bucket = process.env.SUPABASE_BUCKET_AVATARS!; 
 
   constructor(private users: UsuariosService, private jwt: JwtService) {}
 
-  // Sube la foto a Supabase (si viene), devuelve publicUrl + storagePath
   private async subirFotoSupabase(params: { buffer: Buffer; contentType: string; objectPath: string;
   }): Promise<{ publicUrl: string; storagePath: string }> {
     const { data, error } = await supabase
@@ -33,34 +37,34 @@ export class AuthService {
   }
 
   async registro(
-  dto: any,
-  fileInfo?: { file?: Express.Multer.File; objectPath?: string }
-) {
-  let storagePath: string | null = null;
-  let fotoUrl: string | null = null;
+    dto: any,
+    fileInfo?: { file?: Express.Multer.File; objectPath?: string }
+  ) {
+    let storagePath: string | null = null;
+    let fotoUrl: string | null = null;
 
-  if (fileInfo?.file && fileInfo.objectPath) {
-    const up = await this.subirFotoSupabase({
-      buffer: fileInfo.file.buffer,
-      contentType: fileInfo.file.mimetype,
-      objectPath: fileInfo.objectPath,
-    });
-    fotoUrl = up.publicUrl;
-    storagePath = up.storagePath;
-  }
+    if (fileInfo?.file && fileInfo.objectPath) {
+      const up = await this.subirFotoSupabase({
+        buffer: fileInfo.file.buffer,
+        contentType: fileInfo.file.mimetype,
+        objectPath: fileInfo.objectPath,
+      });
+      fotoUrl = up.publicUrl;
+      storagePath = up.storagePath;
+    }
 
-  try {
-    return await this.users.create({
-      ...dto,
-      fotoUrl: fotoUrl ?? null,
-      storagePath: storagePath ?? null,
-      habilitado: true,
-    });
-  } catch (e) {
-    if (storagePath) await this.borrarFotoSupabase(storagePath).catch(() => {});
-    throw e;
+    try {
+      return await this.users.create({
+        ...dto,
+        fotoUrl: fotoUrl ?? null,
+        storagePath: storagePath ?? null,
+        habilitado: true,
+      });
+    } catch (e) {
+      if (storagePath) await this.borrarFotoSupabase(storagePath).catch(() => {});
+      throw e;
+    }
   }
-}
 
   async login(login: string, password: string) {
     const user = await this.users.findOneByLogin(login);
@@ -70,13 +74,15 @@ export class AuthService {
     if (!ok) throw new UnauthorizedException('Contraseña Incorrecta');
 
     const payload = { sub: String(user._id), username: user.username, rol: user.rol };
-    const token = await this.jwt.signAsync(payload, { expiresIn: '8h' });  //'15m' para 15 minutos y 8h para ocho horas y tambien cambiarlo en el auth.controller ambos deben estar sincronizados
+
+    const token = await this.jwt.signAsync(payload, { expiresIn: TOKEN_TIEMPO, secret: JWT_SECRET });
+
     return { user: { ...user.toObject(), password: undefined }, token, payload };
   }
 
   async autorizar(token: string) {
     try {
-      return await this.jwt.verifyAsync(token, { secret: process.env.JWT_SECRET ?? 'secreto-dev' });
+      return await this.jwt.verifyAsync(token, { secret: JWT_SECRET }); 
     } catch {
       throw new UnauthorizedException();
     }
@@ -86,15 +92,16 @@ export class AuthService {
     const payload = await this.autorizar(token);
     const nuevo = await this.jwt.signAsync(
       { sub: payload.sub, username: payload.username, rol: payload.rol },
-      { expiresIn: '15m' }
+      { expiresIn: TOKEN_TIEMPO, secret: JWT_SECRET }
     );
     return { token: nuevo };
   }
 
   async userFromToken(token: string) {
-    const payload = await this.jwt.verifyAsync(token, { secret: process.env.JWT_SECRET ?? 'secreto-dev' });
+    const payload = await this.jwt.verifyAsync(token, { secret: JWT_SECRET }); 
     const user = await this.users.findById(payload.sub);
-    const { password, ...safeUser } = user;
+    const plain = (user as any)?.toObject?.() ?? user;
+    const { password, ...safeUser } = plain ?? {};
     return safeUser;
   }
 }

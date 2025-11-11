@@ -1,5 +1,4 @@
-import { ForbiddenException, Injectable, NotFoundException,
-} from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { randomUUID } from 'crypto';
@@ -8,6 +7,7 @@ import { CreatePublicacionDto } from './dto/create-publicaciones.dto';
 import { ListPublicacionesDto } from './dto/list-publicaciones.dto';
 import { CreateComentarioDto } from './dto/create-comentario.dto';
 import { supabase } from '../supabase.client';
+import { Types } from 'mongoose';
 
 type UsuarioJwtSnap = {
   nombre: string;
@@ -28,7 +28,8 @@ export class PublicacionesService {
     archivo: Express.Multer.File,
     correoUsuario: string,
   ): Promise<string> {
-    const extension = archivo.originalname.split('.').pop()?.toLowerCase() || 'bin';
+    const extension =
+      archivo.originalname.split('.').pop()?.toLowerCase() || 'bin';
     const ruta = `u_${correoUsuario}/${randomUUID()}.${extension}`;
     const bucket = process.env.SUPABASE_BUCKET_PUBLICACIONES!;
 
@@ -88,7 +89,12 @@ export class PublicacionesService {
         : ({ createdAt: -1 } as Record<string, 1 | -1>);
 
     const [items, total] = await Promise.all([
-      this.pubModel.find(filtro).sort(orden as any).skip(offset).limit(limit).lean(),
+      this.pubModel
+        .find(filtro)
+        .sort(orden as any)
+        .skip(offset)
+        .limit(limit)
+        .lean(),
       this.pubModel.countDocuments(filtro),
     ]);
 
@@ -168,6 +174,10 @@ export class PublicacionesService {
             },
             texto: dto.texto,
             createdAt: new Date(),
+            //para el sprint 3
+            modificado: false,
+            updatedAt: null,
+            // ====
           },
         },
       },
@@ -178,6 +188,122 @@ export class PublicacionesService {
     return this.sanitizar(actualizado);
   }
 
+
+  async listComentarios(
+    publicacionId: string,
+    q: { offset?: number; limit?: number },
+  ) {
+    const _id = new Types.ObjectId(publicacionId);
+    const offset = Math.max(0, Number(q.offset ?? 0));
+    const limit = Math.max(1, Number(q.limit ?? 10));
+
+    const res = await this.pubModel.aggregate([
+      { $match: { _id, habilitado: true } },
+      {
+        $project: {
+          total: { $size: '$comentarios' },
+          comentarios: {
+            $slice: [{ $reverseArray: '$comentarios' }, offset, limit],
+          },
+        },
+      },
+    ]);
+
+    if (!res.length) {
+      return { items: [], total: 0, offset, limit };
+    }
+
+    const { comentarios, total } = res[0];
+    const items = (comentarios || []).map((c: any) => ({
+      ...c,
+      _id: String(c._id),
+    }));
+
+    return { items, total, offset, limit };
+  }
+
+  // Editar un comentario
+
+  async editarComentario(
+    publicacionId: string,
+    comentarioId: string,
+    solicitante: { correo: string; rol?: string; roles?: string[] },
+    texto: string,
+  ) {
+    const _pubId = new Types.ObjectId(publicacionId);
+    const _comId = new Types.ObjectId(comentarioId);
+
+    const pub = await this.pubModel
+      .findOne(
+        { _id: _pubId, habilitado: true, 'comentarios._id': _comId },
+        { 'comentarios.$': 1 },
+      )
+      .lean();
+
+    if (!pub || !pub.comentarios?.length) {
+      throw new NotFoundException('Comentario no encontrado');
+    }
+
+    const comentario = pub.comentarios[0];
+
+    const rolStr = (solicitante?.rol ?? '').toString().toLowerCase();
+    const rolesArr: string[] = Array.isArray(solicitante?.roles)
+      ? solicitante.roles.map((r: any) => String(r).toLowerCase())
+      : [];
+    const isAdmin =
+      rolStr === 'administrador' || rolesArr.includes('administrador');
+
+    const esAutor = comentario?.autor?.correo === solicitante?.correo;
+
+    if (!esAutor && !isAdmin) {
+      throw new ForbiddenException(
+        'No estás autorizado para editar este comentario',
+      );
+    }
+
+    await this.pubModel.updateOne(
+      { _id: _pubId, 'comentarios._id': _comId },
+      {
+        $set: {
+          'comentarios.$.texto': texto,
+          'comentarios.$.modificado': true,
+          'comentarios.$.updatedAt': new Date(),
+        },
+      },
+    );
+
+    const actualizado = await this.pubModel.aggregate([
+      { $match: { _id: _pubId } },
+      { $unwind: '$comentarios' },
+      { $match: { 'comentarios._id': _comId } },
+      {
+        $replaceRoot: { newRoot: '$comentarios' },
+      },
+      { $limit: 1 },
+    ]);
+
+    if (!actualizado.length) {
+      throw new NotFoundException('Comentario no encontrado tras la edición');
+    }
+
+    const c = actualizado[0];
+    return { ...c, _id: String(c._id) };
+  }
+
+  // Para obtener la publicacion y mostrar en pantalla
+  async getById(id: string) {
+    const doc = await this.pubModel
+      .findOne({ _id: id, habilitado: true })
+      .lean();
+
+    if (!doc) throw new NotFoundException('Publicación no encontrada');
+
+    const sane = this.sanitizar(doc);
+    return { ...sane, _id: sane._id ? String(sane._id) : String(doc._id) };
+  }
+
+  //=======================
+  // sanitizar
   private sanitizar = (doc: any) => {
     if (!doc) return doc;
     const plain = doc.toObject?.() ?? doc;

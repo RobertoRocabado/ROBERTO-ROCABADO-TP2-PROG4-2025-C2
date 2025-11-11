@@ -1,10 +1,11 @@
-import { Body, Controller, Delete, Get, Param, Post, Query, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { memoryStorage } from 'multer';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { PublicacionesService } from './publicaciones.service';
 import { CreatePublicacionDto } from './dto/create-publicaciones.dto';
 import { CreateComentarioDto } from './dto/create-comentario.dto';
 import { JwtAuthGuard } from '../auth/guards/guards.guard';
+import { UpdateComentarioDto } from './dto/update-publicaciones.dto';
 
 @Controller('publicaciones')
 @UseGuards(JwtAuthGuard)
@@ -37,10 +38,16 @@ export class PublicacionesController {
     return this.service.list({ sortBy, offset, limit } as any);
   }
 
+  @Get(':id')
+  async getById(@Param('id') id: string) {
+    return this.service.getById(id);
+  }
+
   @Delete(':id')
   async softDelete(@Req() req: any, @Param('id') id: string) {
     const esAdmin =
-      req.user?.rol === 'administrador' || req.user?.roles?.includes?.('administrador');
+      req.user?.rol === 'administrador' ||
+      req.user?.roles?.includes?.('administrador');
     return this.service.softDelete(id, req.user, esAdmin);
   }
 
@@ -61,5 +68,29 @@ export class PublicacionesController {
     @Body() dto: CreateComentarioDto,
   ) {
     return this.service.addComment(id, req.user, dto);
+  }
+
+  // Para el sprint 3
+
+  @Get(':id/comentarios')
+  async listComentarios(
+    @Param('id') id: string,
+    @Query('offset') offset?: string,
+    @Query('limit') limit?: string,
+  ) {
+    return this.service.listComentarios(id, {
+      offset: offset != null ? Number(offset) : undefined,
+      limit: limit != null ? Number(limit) : undefined,
+    });
+  }
+
+  @Put(':id/comentarios/:comentarioId')
+  async editarComentario(
+    @Req() req: any,
+    @Param('id') id: string,
+    @Param('comentarioId') comentarioId: string,
+    @Body() dto: UpdateComentarioDto,
+  ) {
+    return this.service.editarComentario(id, comentarioId, req.user, dto.texto);
   }
 }

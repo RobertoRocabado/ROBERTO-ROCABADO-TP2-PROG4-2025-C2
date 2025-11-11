@@ -1,10 +1,4 @@
-import {
-  Injectable,
-  NotFoundException,
-  ConflictException,
-  InternalServerErrorException,
-  HttpException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException, InternalServerErrorException, HttpException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Usuario, UsuarioDocument } from './entities/usuario.entity';
 import { Model } from 'mongoose';
@@ -15,29 +9,29 @@ import { MongoServerError } from 'mongodb';
 
 @Injectable()
 export class UsuariosService {
-
-  constructor(@InjectModel(Usuario.name) private userModel: Model<UsuarioDocument>) {}
+  constructor(
+    @InjectModel(Usuario.name) private userModel: Model<UsuarioDocument>,
+  ) {}
 
   private rethrowOrMap(e: any) {
-  if (e instanceof HttpException) {
-    throw e;
-  }
+    if (e instanceof HttpException) {
+      throw e;
+    }
 
-  // E11000: unique violation (correo/username)
-  if (e instanceof MongoServerError && e.code === 11000) {
-    const field = Object.keys(e.keyPattern ?? {})[0] || 'campo';
-    throw new ConflictException({
-      code: `DUPLICATE_${field}`,
-      field,
-      message: `${field} ya está en uso`,
+    if (e instanceof MongoServerError && e.code === 11000) {
+      const field = Object.keys(e.keyPattern ?? {})[0] || 'campo';
+      throw new ConflictException({
+        code: `DUPLICATE_${field}`,
+        field,
+        message: `${field} ya está en uso`,
+      });
+    }
+
+    throw new InternalServerErrorException({
+      code: 'UNEXPECTED_ERROR',
+      message: 'Ocurrió un error inesperado',
     });
   }
-  
-  throw new InternalServerErrorException({
-    code: 'UNEXPECTED_ERROR',
-    message: 'Ocurrió un error inesperado',
-  });
-}
 
   async create(dto: CreateUsuarioDto) {
     try {
@@ -48,12 +42,14 @@ export class UsuariosService {
         ],
       });
       if (dup) {
-        const u = await this.userModel.findOne({
-          $or: [
-            { correo: dto.correo.toLowerCase().trim() },
-            { username: dto.username.toLowerCase().trim() },
-          ],
-        }).lean();
+        const u = await this.userModel
+          .findOne({
+            $or: [
+              { correo: dto.correo.toLowerCase().trim() },
+              { username: dto.username.toLowerCase().trim() },
+            ],
+          })
+          .lean();
         const field =
           u?.correo === dto.correo.toLowerCase().trim() ? 'correo' : 'username';
         throw new ConflictException({
@@ -93,23 +89,28 @@ export class UsuariosService {
 
   async findById(id: string) {
     const u = await this.userModel.findById(id).lean();
-    if (!u) throw new NotFoundException({ code: 'USER_NOT_FOUND', message: 'Usuario no encontrado' });
+    if (!u)
+      throw new NotFoundException({
+        code: 'USER_NOT_FOUND',
+        message: 'Usuario no encontrado',
+      });
     return u;
   }
 
+  async findByUsername(username: string) {
+    const u = await this.userModel
+      .findOne({ username: (username ?? '').toLowerCase().trim() })
+      .select('-password -__v')
+      .lean();
 
-async findByUsername(username: string) {
-  const u = await this.userModel
-    .findOne({ username: (username ?? '').toLowerCase().trim() })
-    .select('-password -__v')   
-    .lean();
-
-  if (!u) {
-    throw new NotFoundException({ code: 'USER_NOT_FOUND', message: 'Usuario no encontrado' });
+    if (!u) {
+      throw new NotFoundException({
+        code: 'USER_NOT_FOUND',
+        message: 'Usuario no encontrado',
+      });
+    }
+    return u;
   }
-  return u;
-}
-
 
   async update(id: string, dto: UpdateUsuarioDto) {
     try {
@@ -118,8 +119,15 @@ async findByUsername(username: string) {
       if (dto.correo) patch.correo = dto.correo.toLowerCase().trim();
       if (dto.username) patch.username = dto.username.toLowerCase().trim();
 
-      const updated = await this.userModel.findByIdAndUpdate(id, patch, { new: true, runValidators: true });
-      if (!updated) throw new NotFoundException({ code: 'USER_NOT_FOUND', message: 'Usuario no encontrado' });
+      const updated = await this.userModel.findByIdAndUpdate(id, patch, {
+        new: true,
+        runValidators: true,
+      });
+      if (!updated)
+        throw new NotFoundException({
+          code: 'USER_NOT_FOUND',
+          message: 'Usuario no encontrado',
+        });
       return updated.toObject();
     } catch (e) {
       this.rethrowOrMap(e);
@@ -127,14 +135,26 @@ async findByUsername(username: string) {
   }
 
   async deshabilitar(id: string) {
-    const u = await this.userModel.findByIdAndUpdate(id, { habilitado: false }, { new: true }).lean();
-    if (!u) throw new NotFoundException({ code: 'USER_NOT_FOUND', message: 'Usuario no encontrado' });
+    const u = await this.userModel
+      .findByIdAndUpdate(id, { habilitado: false }, { new: true })
+      .lean();
+    if (!u)
+      throw new NotFoundException({
+        code: 'USER_NOT_FOUND',
+        message: 'Usuario no encontrado',
+      });
     return u;
   }
 
   async habilitar(id: string) {
-    const u = await this.userModel.findByIdAndUpdate(id, { habilitado: true }, { new: true }).lean();
-    if (!u) throw new NotFoundException({ code: 'USER_NOT_FOUND', message: 'Usuario no encontrado' });
+    const u = await this.userModel
+      .findByIdAndUpdate(id, { habilitado: true }, { new: true })
+      .lean();
+    if (!u)
+      throw new NotFoundException({
+        code: 'USER_NOT_FOUND',
+        message: 'Usuario no encontrado',
+      });
     return u;
   }
 }
