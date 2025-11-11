@@ -31,25 +31,9 @@ export const routes: Routes = [
   },
 
   {
-    // path: 'publicaciones/:id',
-    // loadComponent: () =>
-    //   import('./pages/publicacion/publicacion').then((m) => m.PublicacionDetalle),
     path: 'publicaciones/:id',
-  loadComponent: () =>
-    import('./pages/publicacion/publicacion')
-      .then(m => m.PublicacionDetalle),
-  renderMode: 'prerender',
-  // 👇 Devolvés una lista de objetos con los params para generar
-  getPrerenderParams: async () => {
-    // Opción A: lista fija (rápida para probar)
-    // return [{ id: '674adf3f1c...' }, { id: '674be0a21d...' }];
-
-    // Opción B: traer IDs desde tu API pública (accesible en build)
-    const res = await fetch(`${process.env['NG_APP_API_URL']}/publicaciones/ids`, {
-      headers: { 'Accept': 'application/json' },
-    });
-    const ids: string[] = await res.json();
-    return ids.map((id) => ({ id }));
+    loadComponent: () =>
+      import('./pages/publicacion/publicacion').then((m) => m.PublicacionDetalle),
   },
   
   { path: '', redirectTo: '/publicaciones', pathMatch: 'full' },
