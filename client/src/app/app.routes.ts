@@ -1,7 +1,9 @@
 import { Routes } from '@angular/router';
+import { Route } from '@angular/router';
 import { AuthGuard } from './guards/auth.guard';
 import { GuestGuard } from './guards/guest.guard';
 import { Cargando } from './components/cargando/cargando';
+import { RenderMode } from '@angular/ssr';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'cargando', pathMatch: 'full' },

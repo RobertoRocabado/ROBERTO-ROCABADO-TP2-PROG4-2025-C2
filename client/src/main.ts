@@ -10,7 +10,6 @@ import { ServerRoute } from '@angular/ssr';
 bootstrapApplication(App, {
   providers: [
     provideRouter(routes),
-    provideServerRoutes(serverRoutes), // agrego para la renderizacion
     provideHttpClient(
       withFetch(),                  // 👈 soluciona NG02801
       withInterceptors([authInterceptor])
@@ -19,6 +18,3 @@ bootstrapApplication(App, {
   ],
 }).catch(console.error);
 
-function provideServerRoutes(serverRoutes: ServerRoute[]): import("@angular/core").Provider | import("@angular/core").EnvironmentProviders {
-  throw new Error('Function not implemented.');
-}
