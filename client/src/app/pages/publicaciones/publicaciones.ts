@@ -6,6 +6,7 @@ import { AuthService } from '../../service/auth.service';
 import { PublicacionesApi, Publicacion, Orden, Page,} from '../../service/publicaciones.service';
 import { PublicacionCardComponent } from '../../components/publicacion-card/publicacion-card';
 import { PublicacionFormComponent } from '../../components/publicacion-form/publicacion-form';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-publicaciones',
@@ -33,8 +34,27 @@ export class Publicaciones {
   constructor(
     private api: PublicacionesApi,
     private auth: AuthService,
+    private router: Router 
   ) {
     this.cargar();
+
+    const nombre = sessionStorage.getItem('loginOk');
+  if (nombre) {
+    sessionStorage.removeItem('loginOk');
+
+    setTimeout(() => {
+      Swal.fire({
+        icon: 'success',
+        title: `Bienvenido ${nombre}!`,
+        timer: 1500,
+        showConfirmButton: false,
+      });
+    }, 300); 
+    }
+  }
+
+  abrir(id: string) {                       
+    this.router.navigate(['/publicaciones', id]);
   }
 
   async cargar() {

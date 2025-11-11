@@ -1,0 +1,101 @@
+<section class="container">
+  @if (cargandoPub()) {
+  <p class="muted">Cargando publicación…</p>
+  } @else if (!pub()) {
+  <p class="muted">No se encontró la publicación.</p>
+  } @else {
+  <article class="pub">
+    <header class="user">
+      <div
+        class="avatar"
+        [style.background-image]="'url(' + (pub()!.usuario.fotoUrl || '') + ')'"
+        [class.has-img]="!!pub()!.usuario.fotoUrl"
+      >
+        @if (!pub()!.usuario.fotoUrl) {
+        {{ (pub()!.usuario.nombre || '')[0] }}{{ (pub()!.usuario.apellido || '')[0] }}
+        }
+      </div>
+
+      <div class="meta">
+        <div class="name">
+          <strong>{{ pub()!.usuario.nombre }} {{ pub()!.usuario.apellido }}</strong>
+          <small>&lt;{{ pub()!.usuario.correo }}&gt;</small>
+        </div>
+        <small class="date">{{ pub()!.createdAt | date : 'medium' }}</small>
+      </div>
+    </header>
+    <hr />
+    <h2 class="titulo">{{ pub()!.titulo }}</h2>
+    <p class="descripcion">{{ pub()!.descripcion }}</p>
+
+    @if (pub()!.imagenUrl) {
+    <img class="imagen" [src]="pub()!.imagenUrl!" alt="imagen publicación" />
+    }
+
+    <hr />
+
+    <footer class="acciones">
+      @if (!dioLike()) {
+      <button (click)="like()">👍 Me gusta ({{ pub()!.likesCount }})</button>
+      } @else {
+      <button class="liked" (click)="unlike()">👎 Quitar like ({{ pub()!.likesCount }})</button>
+      }
+    </footer>
+  </article>
+
+  <section class="comentarios">
+    <h3>Comentarios</h3>
+
+    <div class="comentar">
+      <input
+        [ngModel]="textoComentario()"
+        (ngModelChange)="textoComentario.set($event)"
+        placeholder="Escribe un comentario…"
+        maxlength="800"
+      />
+      <button class="btn-enviar" (click)="enviarComentario()">Enviar</button>
+    </div>
+
+    @if (cargandoCom() && comentarios().length === 0) {
+    <p class="muted">Cargando comentarios…</p>
+    }
+
+    <ul class="lista">
+      @for (c of comentarios(); track c._id) {
+      <li class="coment">
+        <div class="c-head">
+          <strong>{{ c.autor.nombre }} {{ c.autor.apellido }}</strong>
+          <small>&lt;{{ c.autor.correo }}&gt;</small>
+          <span class="ago">{{ c.createdAt | date : 'medium' }}</span>
+          @if (c.modificado) { <span class="edited">(editado)</span> }
+        </div>
+        <hr />
+        @if (editId() === c._id) {
+        <textarea
+          rows="3"
+          [ngModel]="editTexto()"
+          (ngModelChange)="editTexto.set($event)"
+        ></textarea>
+
+        <div class="edit-actions">
+          <button class="ghost" (click)="guardarEdicion(c)">Guardar</button>
+          <button class="ghost" (click)="cancelarEdicion()">Cancelar</button>
+        </div>
+        } @else {
+        <p class="c-body">{{ c.texto }}</p>
+          <hr>
+        @if (puedeEditarComentario(c)) {
+        <button class="ghost" (click)="activarEdicion(c)">Editar</button>
+        } }
+      </li>
+      }
+    </ul>
+
+    @if (quedanMas) {
+    <div class="load-more">
+      <button (click)="cargarComentarios()">Cargar más</button>
+    </div>
+    }
+  </section>
+  }
+</section>

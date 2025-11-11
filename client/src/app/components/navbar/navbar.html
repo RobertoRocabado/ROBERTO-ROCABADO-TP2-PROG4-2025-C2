@@ -1,9 +1,11 @@
+@if(auth.estaValidado){
 <div class="container">
   <div class="logo">
-    <img src="/ChatGPT Image 28 oct 2025, 19_19_18.png" alt="Logo" routerLink="/" />
+    <!-- <img src="/ChatGPT Image 28 oct 2025, 19_19_18.png" alt="Logo" routerLink="/" /> -->
+     <img src="/ChatGPT Image 28 oct 2025, 19_19_18.png" alt="Logo" />
   </div>
-
-  @if (auth.usuario) {
+  
+   @if (auth.usuario) {
   <ul class="nav-links">
     <li><a routerLink="/publicaciones" routerLinkActive="active">Publicaciones</a></li>
     <li><a routerLink="/miperfil" routerLinkActive="active">Mi Perfil</a></li>
@@ -13,7 +15,7 @@
   }
 
   <div class="nav-actions">
-    @if (auth.usuario) {
+    @if (auth.usuario ) {
     <div class="profile-container">
       <img [src]="(auth.usuario && auth.usuario.fotoUrl) || 'assets/user.jpg'" class="profile-pic" alt="Foto perfil">
 
@@ -44,3 +46,4 @@
     }
   </div>
 </div>
+}

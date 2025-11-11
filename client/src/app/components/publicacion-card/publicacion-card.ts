@@ -20,8 +20,25 @@ export class PublicacionCardComponent {
   @Output() eliminar = new EventEmitter<string>();
   @Output() comentar = new EventEmitter<{ id: string; texto: string }>();
 
+  // Para abrir una publicacion y ver en detalle 
+  @Output() abrir = new EventEmitter<string>(); 
+
   comentarAbierto = signal(false);
   textoComentario = '';
+
+  // bloqueo de navegacion al apretar los botones 
+  block(ev: Event) {
+    ev.stopPropagation();
+    ev.preventDefault();
+  }
+
+  onCardClick(ev: MouseEvent) {
+    const el = ev.target as HTMLElement;
+    const interactive = el.closest('button, a, input, textarea, label, select, [data-stop], .no-nav');
+    if (interactive) return;
+
+    this.abrir.emit(this.pub._id);
+  }
 
   get dioLike(): boolean {
     return !!this.meCorreo && this.pub.likedBy?.includes(this.meCorreo);

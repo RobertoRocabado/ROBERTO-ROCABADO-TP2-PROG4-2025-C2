@@ -15,18 +15,13 @@
 
   @if (cargando()) {
   <p class="empty">Cargando…</p>
-  } @else {
-  @if (publicaciones().length === 0) {
+  } @else { @if (publicaciones().length === 0) {
   <p class="empty">No hay publicaciones todavía.</p>
-  } @else {
-  @for (p of publicaciones(); track trackPub($index, p)) {
-  <app-publicacion-card [pub]="p" [esPropia]="esPropia(p)" [meCorreo]="meCorreo()" (like)="like($event)"
-    (unlike)="unlike($event)" (comentar)="comentar($event)" (eliminar)="eliminar($event)">
+  } @else { @for (p of publicaciones(); track trackPub($index, p)) {
+  <app-publicacion-card [pub]="p" [esPropia]="esPropia(p)" [meCorreo]="meCorreo()" (abrir)="abrir($event)"
+    (like)="like($event)" (unlike)="unlike($event)" (comentar)="comentar($event)" (eliminar)="eliminar($event)">
   </app-publicacion-card>
-  }
-  }
-
-  @if (pages() > 1) {
+  } } @if (pages() > 1) {
   <nav class="pager">
     @for (n of pageNumbers(); track n) {
     <button [class.active]="n === page()" (click)="go(n)">
@@ -34,6 +29,5 @@
     </button>
     }
   </nav>
-  }
-  }
+  } }
 </section>

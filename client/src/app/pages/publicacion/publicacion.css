@@ -1,0 +1,181 @@
+.container {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+.muted {
+    color: #71717a;
+}
+
+.pub {
+    background: #c9c5c5;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.user {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding-bottom: .5rem;
+    margin-bottom: .5rem;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    background: #d4d4d8 center/cover no-repeat;
+    display: grid;
+    place-items: center;
+    font-weight: 700;
+}
+
+.avatar.has-img {
+    color: transparent;
+}
+
+.meta .name {
+    display: flex;
+    gap: .5rem;
+    align-items: baseline;
+}
+
+.meta small {
+    color: #6b7280;
+}
+
+.titulo {
+    margin: .25rem 0 .25rem;
+}
+
+.descripcion {
+    margin: 0 0 .5rem;
+    color: #374151;
+}
+
+.imagen {
+    width: 100%;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    margin: .5rem 0;
+}
+
+.acciones {
+    display: flex;
+    gap: .5rem;
+}
+
+.acciones button {
+    padding: .4rem .7rem;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    background: #fff;
+    cursor: pointer;
+}
+
+.acciones button.liked {
+    border: 2px solid #b1acac;
+}
+
+.comentarios h3 {
+    margin: .75rem 0;
+}
+
+.comentar {
+    display: flex;
+    gap: .5rem;
+    margin-bottom: .75rem;
+}
+
+.comentar input {
+    flex: 1;
+    padding: .45rem .6rem;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+}
+
+.lista {
+    list-style: none;
+    padding: 5px;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: .75rem;
+    background-color: #c9c5c5;
+    border-radius: 9px;
+}
+
+.coment {
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: .6rem;
+    background: #fff;
+}
+
+.c-head {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+    align-items: baseline;
+}
+
+.c-head .ago {
+    color: #6b7280;
+    margin-left: auto;
+}
+
+.c-head .edited {
+    color: #ff0000;
+    font-size: 15px;
+}
+
+.c-body {
+    margin: 10px;
+    white-space: pre-wrap;
+}
+
+textarea {
+    width: 97%;
+    padding: .5rem .6rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    resize: vertical;
+}
+
+.btn-enviar{
+    width: 80px;
+    border-radius: 9px;
+    background-color: #c9c5c5;
+}
+
+.edit-actions {
+    display: flex;
+    gap: .5rem;
+    margin-top: .4rem;
+}
+
+button.ghost {
+    background: #f8fafc;
+    width: 80px;
+    height: 30px;
+    border: 1px solid #e5e7eb;
+    border-radius: 9px;
+}
+
+.load-more {
+    display: flex;
+    justify-content: center;
+    margin: .75rem 0 1rem;
+}
+
+.load-more button {
+    padding: .45rem .8rem;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    background: #fff;
+    cursor: pointer;
+}

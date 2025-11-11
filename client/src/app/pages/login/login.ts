@@ -15,6 +15,7 @@ import Swal from 'sweetalert2';
 export class Login {
   form = { login: '', password: '' };
   msg = '';
+  enviando = false;
 
   constructor(private auth: AuthService, private router: Router) {}
 
@@ -22,30 +23,28 @@ export class Login {
     const login = this.form.login.trim();
     const password = this.form.password;
 
+    if (!login || !password) return;
+
+    this.enviando = true;
+    
+
     this.auth.login(login, password).subscribe({
       next: (res) => {
-        this.auth.setUsuario(res.user);
-        Swal.fire({
-        icon: 'success',
-        title: 'Bienvenido ' + res.user.nombre + '!',
-        timer: 1500,
-        showConfirmButton: false
-      });
-        this.router.navigateByUrl('/publicaciones');
+        sessionStorage.setItem('loginOk', res.user.nombre);
+        this.router.navigate(['/cargando']);
       },
-       error: (e) => {
-      console.error('Login error:', e.status, e.error);
+      error: (e) => {
+        this.enviando = false;
+        console.error('Login error:', e?.status, e?.error);
 
-      const msg = e?.error?.message || 'Credenciales inválidas';
-
-      Swal.fire({
-        icon: 'error',
-        title: 'Error de autenticación',
-        text: msg,
-        confirmButtonColor: '#d33',
-      });
-    }
+        const msg = e?.error?.message || 'Credenciales inválidas';
+        Swal.fire({
+          icon: 'error',
+          title: 'Error de autenticación',
+          text: msg,
+          confirmButtonColor: '#d33',
+        });
+      },
     });
   }
-
 }
