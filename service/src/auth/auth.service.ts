@@ -5,7 +5,7 @@ import * as bcrypt from 'bcrypt';
 import { supabase } from '../supabase.client';
 
 
-const TOKEN_TIEMPO = '30m'; // 15m para 15 minutos
+const TOKEN_TIEMPO = '5m'; // 15m para 15 minutos
 const JWT_SECRET = process.env.JWT_SECRET ?? 'secreto-dev'; 
 
 
