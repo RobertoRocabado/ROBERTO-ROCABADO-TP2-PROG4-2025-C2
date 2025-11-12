@@ -3,10 +3,10 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { AuthService } from '../../service/auth.service';
-import { PublicacionesApi, Publicacion, Orden, Page,} from '../../service/publicaciones.service';
+import { PublicacionesApi, Publicacion, Orden, Page } from '../../service/publicaciones.service';
 import { PublicacionCardComponent } from '../../components/publicacion-card/publicacion-card';
 import { PublicacionFormComponent } from '../../components/publicacion-form/publicacion-form';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-publicaciones',
@@ -20,7 +20,7 @@ export class Publicaciones {
   sortBy = signal<Orden>('fecha');
   page = signal(1);
 
-  private readonly LIMIT = 6;
+  private readonly LIMIT = 10;
 
   publicaciones = signal<Publicacion[]>([]);
   total = signal(0);
@@ -34,26 +34,47 @@ export class Publicaciones {
   constructor(
     private api: PublicacionesApi,
     private auth: AuthService,
-    private router: Router 
+    private router: Router,
+    private route: ActivatedRoute
   ) {
-    this.cargar();
+    this.route.queryParamMap.subscribe((pm) => {
+      const qb = (pm.get('orderBy') as Orden) || 'fecha';
+      const qp = Math.max(1, Number(pm.get('page') ?? '1'));
+
+      const needsWrite = !pm.has('orderBy') || !pm.has('page');
+
+      const changed = this.sortBy() !== qb || this.page() !== qp;
+      this.sortBy.set(qb === 'likes' ? 'likes' : 'fecha');
+      this.page.set(qp);
+
+      if (needsWrite) {
+        this.router.navigate(['/publicaciones'], {
+          queryParams: { orderBy: this.sortBy(), page: this.page() },
+          replaceUrl: true,
+        });
+        return;
+      }
+
+      if (changed || this.publicaciones().length === 0) {
+        this.cargar();
+      }
+    });
 
     const nombre = sessionStorage.getItem('loginOk');
-  if (nombre) {
-    sessionStorage.removeItem('loginOk');
-
-    setTimeout(() => {
-      Swal.fire({
-        icon: 'success',
-        title: `Bienvenido ${nombre}!`,
-        timer: 1500,
-        showConfirmButton: false,
-      });
-    }, 300); 
+    if (nombre) {
+      sessionStorage.removeItem('loginOk');
+      setTimeout(() => {
+        Swal.fire({
+          icon: 'success',
+          title: `Bienvenido ${nombre}!`,
+          timer: 1500,
+          showConfirmButton: false,
+        });
+      }, 300);
     }
   }
 
-  abrir(id: string) {                       
+  abrir(id: string) {
     this.router.navigate(['/publicaciones', id]);
   }
 
@@ -61,8 +82,13 @@ export class Publicaciones {
     this.cargando.set(true);
     try {
       const res = await this.api
-        .listar({ sortBy: this.sortBy(), page: this.page(), limit: this.LIMIT })
+        .listar({
+          sortBy: this.sortBy(),
+          page: this.page(),       
+          limit: this.LIMIT,
+        })
         .toPromise();
+
       const page = (res as Page<Publicacion>) ?? { items: [], total: 0, offset: 0, limit: this.LIMIT };
       this.publicaciones.set(page.items || []);
       this.total.set(page.total || 0);
@@ -73,15 +99,18 @@ export class Publicaciones {
 
   cambiarOrden(o: Orden) {
     if (this.sortBy() === o) return;
-    this.sortBy.set(o);
-    this.page.set(1);
-    this.cargar();
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { orderBy: o, page: 1 },
+    });
   }
 
   go(n: number) {
     if (n < 1 || n > this.pages()) return;
-    this.page.set(n);
-    this.cargar();
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { orderBy: this.sortBy(), page: n },
+    });
   }
 
   trackPub = (_: number, p: Publicacion) => p._id;
@@ -93,9 +122,26 @@ export class Publicaciones {
 
   async crearPub(payload: { titulo: string; descripcion: string; imagen?: File | null }) {
     try {
-      await this.api.crear(payload).toPromise();
-      this.page.set(1); 
-      this.cargar();
+      const created = (await this.api.crear(payload).toPromise()) as Publicacion;
+
+      this.total.update((t) => t + 1);
+
+      if (this.sortBy() === 'fecha' && this.page() === 1) {
+        const actual = this.publicaciones();
+        this.publicaciones.set([created, ...actual].slice(0, this.LIMIT));
+      } else {
+        this.router.navigate([], {
+          relativeTo: this.route,
+          queryParams: { orderBy: this.sortBy(), page: 1 },
+        });
+      }
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Publicación creada',
+        timer: 1200,
+        showConfirmButton: false,
+      });
     } catch {
       Swal.fire('Error', 'No se pudo crear la publicación', 'error');
     }
@@ -105,9 +151,9 @@ export class Publicaciones {
     const list = [...this.publicaciones()];
     const i = list.findIndex((p) => p._id === id);
     if (i === -1) return;
+
     const me = this.meCorreo();
     if (!me) return;
-
     if (list[i].likedBy?.includes(me)) return;
 
     const prev = { ...list[i] };
@@ -117,11 +163,8 @@ export class Publicaciones {
 
     try {
       const updated = await this.api.like(id).toPromise();
-      if ((updated as any)?.alreadyLiked) {
-        list[i] = prev;
-      } else {
-        list[i] = { ...list[i], ...(updated as Publicacion) };
-      }
+      if ((updated as any)?.alreadyLiked) list[i] = prev;
+      else list[i] = { ...list[i], ...(updated as Publicacion) };
       this.publicaciones.set(list);
     } catch {
       list[i] = prev;
@@ -133,9 +176,9 @@ export class Publicaciones {
     const list = [...this.publicaciones()];
     const i = list.findIndex((p) => p._id === id);
     if (i === -1) return;
+
     const me = this.meCorreo();
     if (!me) return;
-
     if (!list[i].likedBy?.includes(me)) return;
 
     const prev = { ...list[i] };
@@ -145,11 +188,8 @@ export class Publicaciones {
 
     try {
       const updated = await this.api.unlike(id).toPromise();
-      if ((updated as any)?.notLiked) {
-        list[i] = prev;
-      } else {
-        list[i] = { ...list[i], ...(updated as Publicacion) };
-      }
+      if ((updated as any)?.notLiked) list[i] = prev;
+      else list[i] = { ...list[i], ...(updated as Publicacion) };
       this.publicaciones.set(list);
     } catch {
       list[i] = prev;
@@ -174,7 +214,7 @@ export class Publicaciones {
   async eliminar(id: string) {
     const confirm = await Swal.fire({
       title: '¿Eliminar publicación?',
-      text: 'Solo el administrador podra deshacer esta accion.',
+      text: 'Solo el administrador podrá deshacer esta acción.',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Si, eliminar',

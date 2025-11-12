@@ -30,8 +30,8 @@ export class Login {
 
     this.auth.login(login, password).subscribe({
       next: (res) => {
-        sessionStorage.setItem('loginOk', res.user.nombre);
         this.router.navigate(['/cargando']);
+        sessionStorage.setItem('loginOk', res.user.nombre);
       },
       error: (e) => {
         this.enviando = false;
@@ -42,7 +42,7 @@ export class Login {
           icon: 'error',
           title: 'Error de autenticación',
           text: msg,
-          confirmButtonColor: '#d33',
+          confirmButtonColor: '#b1acac',
         });
       },
     });

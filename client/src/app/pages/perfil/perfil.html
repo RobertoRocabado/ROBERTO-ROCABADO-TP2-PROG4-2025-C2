@@ -1,6 +1,6 @@
 <section class="pagina-perfil">
     <button class="btn-volver" (click)="volver()">↩︎</button>
-    <!-- PERFIL DEL USUARIO -->
+  
     @if (usuario(); as u) {
     <div class="perfil-card">
         <h2 class="nombreYapellido"><strong>{{ u.nombre }} {{ u.apellido }}</strong></h2>
@@ -21,7 +21,7 @@
     </div>
     }
 
-    <!-- PUBLICACIONES PROPIAS -->
+   
     <h2 class="titulo-seccion">Mis últimas 3 publicaciones</h2>
     @if (errorPosts()) {
     <div class="mensaje-error">{{ errorPosts() }}</div>
@@ -49,6 +49,7 @@
             <p class="descripcion-publicacion">{{ p.descripcion }}</p>
             @if (p.comentarios.length) {
             <div class="comentarios">
+                <hr>
                 <h3>Comentarios:</h3>
                 @for (c of p.comentarios; track c._id) {
                 <div class="comentario">
@@ -58,6 +59,7 @@
                     </div>
                     <p>{{ c.texto }}</p>
                 </div>
+                <hr>
                 }
             </div>
             }
@@ -66,3 +68,4 @@
     </div>
     }
 </section>
+

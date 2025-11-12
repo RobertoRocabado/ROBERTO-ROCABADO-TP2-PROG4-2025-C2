@@ -49,10 +49,12 @@ export class PublicacionesApi {
   constructor(private http: HttpClient) {}
 
   listar(opts: { sortBy?: Orden; page?: number; limit?: number; userCorreo?: string }) {
-    let params = new HttpParams();
+    const page = Math.max(1, opts.page ?? 1);
+    const limit = Math.max(1, opts.limit ?? 10);
+
+    let params = new HttpParams().set('limit', String(limit)).set('page', String(page));
+
     if (opts.sortBy) params = params.set('sortBy', opts.sortBy);
-    if (opts.page != null) params = params.set('page', String(opts.page));
-    if (opts.limit != null) params = params.set('limit', String(opts.limit));
     if (opts.userCorreo) params = params.set('userCorreo', opts.userCorreo);
 
     return this.http.get<Page<Publicacion>>(this.base, {

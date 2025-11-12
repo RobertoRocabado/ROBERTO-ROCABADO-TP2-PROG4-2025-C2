@@ -71,7 +71,7 @@ export class MiPerfil implements OnInit {
     this.publicacionesApi
       .listar({
         sortBy: 'fecha',
-        limit: 4,
+        limit: 3,
         page: 1,
         userCorreo: me.correo, 
       })
@@ -103,3 +103,4 @@ export class MiPerfil implements OnInit {
     this.router.navigate(['/publicaciones']);
   }
 }
+
