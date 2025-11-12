@@ -81,7 +81,7 @@ export class AuthService {
           next: () => {
             Swal.fire({
               title: 'Sesión extendida',
-              text: 'Tu sesión se extendió 30 minutos más.',
+              text: 'Tu sesión se extendió 15 minutos más.',
               icon: 'success',
               timer: 1500,
               showConfirmButton: false
