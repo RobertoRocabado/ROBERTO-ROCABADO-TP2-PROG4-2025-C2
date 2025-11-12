@@ -10,6 +10,7 @@ import { SoloLetrasDirective } from '../../Directives/solo-letras';
 import { CapitalizarPrimeraDirective } from '../../Directives/capitalizar-primera';
 import { PasswordReglaDirective } from '../../Directives/password-regla';
 import { MatchPasswordDirective } from '../../Directives/match-password';
+import { AnioCuatroDirective } from '../../Directives/cuatro-digitos';
 
 type Rol = 'usuario' | 'administrador';
 
@@ -34,6 +35,7 @@ interface RegistroForm {
     CapitalizarPrimeraDirective,
     PasswordReglaDirective,
     MatchPasswordDirective,
+    AnioCuatroDirective,
   ],
   templateUrl: './registro.html',
   styleUrls: ['./registro.css'],
@@ -57,6 +59,9 @@ export class Registro {
   submitted = false;
   msgGeneral = '';
   msg = '';
+
+  maxFecha = new Date().toISOString().slice(0,10);
+  minFecha = '1900-01-01'
 
   constructor(private auth: AuthService, private router: Router) {}
 
@@ -124,7 +129,18 @@ export class Registro {
     }
 
     this.auth.registro(fd).subscribe({
-      next: () => this.router.navigateByUrl('/login'),
+      next: () => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Registro exitoso!',
+          text: 'Tu cuenta fue creada correctamente.',
+          confirmButtonColor: '#b1acac',
+          confirmButtonText: 'Iniciar sesión',
+        }).then(() => {
+          this.router.navigateByUrl('/login');
+        });
+      },
+      // next: () => this.router.navigateByUrl('/login'),
       error: (err: any) => {
         console.error(err);
 
@@ -136,7 +152,7 @@ export class Registro {
           icon: 'error',
           title: 'No pudimos crear tu cuenta',
           text: this.msg ?? 'Error inesperado',
-          confirmButtonColor: '#d33',
+          confirmButtonColor: '#b1acac',
           confirmButtonText: 'Entendido',
         });
       },

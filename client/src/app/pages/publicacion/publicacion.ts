@@ -1,6 +1,6 @@
 import { Component, computed, signal } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../service/auth.service';
 import { PublicacionesApi, Publicacion, Comentario } from '../../service/publicaciones.service';
@@ -41,7 +41,8 @@ export class PublicacionDetalle {
   constructor(
     private route: ActivatedRoute,
     private api: PublicacionesApi,
-    private auth: AuthService
+    private auth: AuthService,
+    private router : Router
   ) {
     this.init();
   }
@@ -173,5 +174,9 @@ export class PublicacionDetalle {
 
   get quedanMas(): boolean {
     return this.comentarios().length < this.total();
+  }
+
+  volver(){
+    this.router.navigate(['/publicaciones']);
   }
 }

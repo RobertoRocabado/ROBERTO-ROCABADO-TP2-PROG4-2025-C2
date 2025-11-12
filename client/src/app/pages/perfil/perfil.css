@@ -1,3 +1,18 @@
+.btn-volver {
+  margin: 0 0 10px 0;
+  border-radius: 8px;
+  font-size: 45px;
+  border: 1px solid #e5e7eb;
+  background: #b1acac;
+  cursor: pointer;
+  width: 10%;
+}
+
+.btn-volver:hover {
+  background: #d4d4d8;
+}
+
+
 .pagina-perfil {
     max-width: 900px;
     margin: 0 auto;
@@ -12,10 +27,11 @@
         "nombre nombre"
         "info   foto";
     gap: 1.5rem;
-    background: #fafafa;
+    background-color: #b1acac;
     padding: 2rem;
     border-radius: 12px;
     margin-bottom: 2rem;
+    border: 3px solid #646464;
 }
 
 .foto-perfil {
@@ -32,9 +48,6 @@
     grid-area: info;
 }
 
-.titulo-seccion {
-    margin: 0 0 0.75rem;
-}
 
 .lista-publicaciones {
     display: flex;
@@ -43,17 +56,18 @@
 }
 
 .publicacion {
-    border: 1px solid #e5e5e5;
-    padding: 1rem;
+    border: 1px solid #646464;
+    padding: 10px;
     border-radius: 10px;
-    background: #fff;
+    background-color: #b1acac;
 }
 
 .encabezado-publicacion {
     display: flex;
-    gap: .7rem;
+    gap: .5rem;
     align-items: center;
-    margin-bottom: .5rem;
+    margin-bottom: 3px;
+    border-radius: 9px;
 }
 
 .mini-foto {
@@ -69,7 +83,6 @@
     object-fit: cover;
     border-radius: 10px;
     margin: .5rem 0;
-    border: 1px solid #f1f1f1;
 }
 
 .descripcion-publicacion {
@@ -93,6 +106,37 @@
 .nombreYapellido{
     grid-area: nombre;
     font-size: 40px;
-    text-transform: lowercase;
     margin: auto;
+}
+
+.spinner-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  height: 100%;
+  width: 100%;
+  text-align: center;
+  margin: 200px auto;
+}
+
+.spinner {
+  width: 45px;
+  height: 45px;
+  border: 5px solid rgba(0, 0, 0, 0.2);
+  border-top: 5px solid #0078ff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.spinner-container p {
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  color: #555;
 }

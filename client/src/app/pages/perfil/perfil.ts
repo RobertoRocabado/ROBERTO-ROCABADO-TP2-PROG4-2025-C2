@@ -1,7 +1,8 @@
 import { Component, OnInit, signal } from '@angular/core';
-import { DatePipe, NgIf, NgFor } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { AuthService, Usuario } from '../../service/auth.service';
 import { PublicacionesApi, Publicacion, Page } from '../../service/publicaciones.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-mi-perfil',
@@ -24,6 +25,7 @@ export class MiPerfil implements OnInit {
   constructor(
     private auth: AuthService,
     private publicacionesApi: PublicacionesApi,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -97,4 +99,7 @@ export class MiPerfil implements OnInit {
 
   trackById = (_: number, p: Publicacion) => p._id;
 
+  volver(){
+    this.router.navigate(['/publicaciones']);
+  }
 }

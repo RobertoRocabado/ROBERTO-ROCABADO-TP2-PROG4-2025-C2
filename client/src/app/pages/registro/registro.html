@@ -4,7 +4,8 @@
 
   <!-- Nombre -->
   <label>Nombre</label>
-  <input type="text" name="nombre" [(ngModel)]="form.nombre" required appCapitalizarPrimera appSoloLetras #nombre="ngModel" />
+  <input type="text" name="nombre" [(ngModel)]="form.nombre" required appCapitalizarPrimera appSoloLetras
+    #nombre="ngModel" />
   @if ((nombre.invalid && (nombre.dirty || nombre.touched)) || (submitted && nombre.invalid)) {
   <div class="error">
     @if (nombre.errors?.['required']) { <span>El nombre es obligatorio.</span> }
@@ -14,7 +15,8 @@
 
   <!-- Apellido -->
   <label>Apellido</label>
-  <input type="text" name="apellido" [(ngModel)]="form.apellido" required appCapitalizarPrimera appSoloLetras #apellido="ngModel" />
+  <input type="text" name="apellido" [(ngModel)]="form.apellido" required appCapitalizarPrimera appSoloLetras
+    #apellido="ngModel" />
   @if ((apellido.invalid && (apellido.dirty || apellido.touched)) || (submitted && apellido.invalid)) {
   <div class="error">
     @if (apellido.errors?.['required']) { <span>El apellido es obligatorio.</span> }
@@ -73,10 +75,19 @@
 
   <!-- Fecha de nacimiento -->
   <label>Fecha de nacimiento</label>
-  <input type="date" name="fechaNacimiento" [(ngModel)]="form.fechaNacimiento" required #fecha="ngModel" />
+  <input type="date" name="fechaNacimiento" [(ngModel)]="form.fechaNacimiento" required appAnioCuatro [min]='minFecha'
+    [max]="maxFecha" #fecha="ngModel" />
   @if ((fecha.invalid && (fecha.dirty || fecha.touched)) || (submitted && fecha.invalid)) {
   <div class="error">
+    @if (fecha.errors?.['required']) {
     <span>La fecha de nacimiento es obligatoria.</span>
+    }
+    @if (fecha.errors?.['anio4']) {
+    <span>El año debe tener exactamente 4 dígitos.</span>
+    }
+    @if (fecha.errors?.['anioRango']) {
+    <span>El año debe estar entre 1900 y {{ maxFecha | date:'yyyy' }}.</span>
+    }
   </div>
   }
 

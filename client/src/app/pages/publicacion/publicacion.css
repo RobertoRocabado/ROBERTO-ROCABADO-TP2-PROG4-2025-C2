@@ -1,3 +1,18 @@
+.btn-volver {
+  margin: 0 0 10px 0;
+  border-radius: 8px;
+  font-size: 45px;
+  border: 1px solid #e5e7eb;
+  background: #b1acac;
+  cursor: pointer;
+  width: 10%;
+}
+
+.btn-volver:hover {
+  background: #d4d4d8;
+}
+
+
 .container {
     max-width: 860px;
     margin: 0 auto;

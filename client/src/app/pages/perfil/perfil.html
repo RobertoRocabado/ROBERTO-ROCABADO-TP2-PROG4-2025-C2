@@ -1,5 +1,5 @@
 <section class="pagina-perfil">
-
+    <button class="btn-volver" (click)="volver()">↩︎</button>
     <!-- PERFIL DEL USUARIO -->
     @if (usuario(); as u) {
     <div class="perfil-card">
@@ -27,7 +27,10 @@
     <div class="mensaje-error">{{ errorPosts() }}</div>
     }
     @if (cargandoPosts()) {
-    <p>Cargando publicaciones...</p>
+    <div class="spinner-container">
+        <div class="spinner"></div>
+        <p>Cargando...</p>
+    </div>
     } @else {
     <div class="lista-publicaciones">
         @for (p of publicaciones(); track trackById($index, p)) {
@@ -36,17 +39,14 @@
                 <img class="mini-foto" [src]="p.usuario.fotoUrl " alt="Avatar">
                 <div class="titulos">
                     <h4>{{ p.titulo }}</h4>
-                    <small>
-                        por {{ p.usuario.nombre }} {{ p.usuario.apellido }}
-                        — {{ p.createdAt | date:'short' }}
-                    </small>
+                    por {{ p.usuario.nombre }} {{ p.usuario.apellido }}
+                    — {{ p.createdAt | date:'short' }}
                 </div>
             </header>
             @if (p.imagenUrl) {
             <img class="imagen-publicacion" [src]="p.imagenUrl" alt="Imagen de la publicación">
             }
             <p class="descripcion-publicacion">{{ p.descripcion }}</p>
-            <hr>
             @if (p.comentarios.length) {
             <div class="comentarios">
                 <h3>Comentarios:</h3>

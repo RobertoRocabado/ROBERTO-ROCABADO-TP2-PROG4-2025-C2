@@ -32,8 +32,8 @@ export class AuthService {
   get estaValidado(): boolean { return this.validado; }
   //
 
-  private TIEMPO_SESION = 30 * 60 * 1000;   
-  private ADVERTENCIA = 25 * 60 * 1000;   
+  private TIEMPO_SESION = 5 * 60 * 1000;   
+  private ADVERTENCIA = 2 * 60 * 1000;   
   private sessionWarningTimer: any = null;    
   private sessionExpiryTimer: any = null;     
 

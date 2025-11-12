@@ -14,7 +14,10 @@
   <app-publicacion-form (crear)="crearPub($event)"></app-publicacion-form>
 
   @if (cargando()) {
-  <p class="empty">Cargando…</p>
+  <div class="spinner-container">
+    <div class="spinner"></div>
+    <p>Cargando...</p>
+  </div>
   } @else { @if (publicaciones().length === 0) {
   <p class="empty">No hay publicaciones todavía.</p>
   } @else { @for (p of publicaciones(); track trackPub($index, p)) {
