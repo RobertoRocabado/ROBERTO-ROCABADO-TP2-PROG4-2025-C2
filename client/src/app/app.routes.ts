@@ -6,7 +6,7 @@ import { Cargando } from './components/cargando/cargando';
 import { RenderMode } from '@angular/ssr';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'cargando', pathMatch: 'full' },
+  // { path: '', redirectTo: 'cargando', pathMatch: 'full' },
   { path: 'cargando', component: Cargando },
   {
     path: 'login',
