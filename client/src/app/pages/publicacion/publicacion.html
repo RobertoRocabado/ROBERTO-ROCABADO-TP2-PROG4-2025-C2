@@ -1,7 +1,10 @@
 <section class="container">
   <button class="btn-volver" (click)="volver()">↩︎</button>
   @if (cargandoPub()) {
-  <p class="muted">Cargando publicación…</p>
+    <div class="spinner-container">
+      <div class="spinner"></div>
+      <p>Cargando...</p>
+    </div>
   } @else if (!pub()) {
   <p class="muted">No se encontró la publicación.</p>
   } @else {
