@@ -71,7 +71,7 @@ export class MiPerfil implements OnInit {
     this.publicacionesApi
       .listar({
         sortBy: 'fecha',
-        limit: 3,
+        limit: 50,
         page: 1,
         userCorreo: me.correo, 
       })
