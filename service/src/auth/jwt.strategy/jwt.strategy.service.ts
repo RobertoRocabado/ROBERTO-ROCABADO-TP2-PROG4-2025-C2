@@ -12,8 +12,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(private readonly usuariosService: UsuariosService) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
-        cookieExtractor,
         ExtractJwt.fromAuthHeaderAsBearerToken(),
+        cookieExtractor,
       ]),
       ignoreExpiration: false,
       secretOrKey: process.env.JWT_SECRET,
@@ -36,7 +36,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       nombre:   user.nombre,
       apellido: user.apellido,
       correo:   user.correo,   
-      rol:      user.rol ?? payload.rol ?? 'user',
+      rol:      user.rol ?? payload.rol ?? 'usuario',
       id:       user._id?.toString?.(), 
       username: user.username,
       fotoUrl: user.fotoUrl ?? null

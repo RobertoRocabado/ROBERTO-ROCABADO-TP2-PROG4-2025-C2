@@ -76,6 +76,11 @@ export class UsuariosService {
     return this.userModel.find().lean();
   }
 
+  // nuevo sprint 4
+  async findAllParaAdmin() {
+    return this.userModel.find().select('-password -__v').lean();
+  }
+
   async findOneByLogin(login: string) {
     return this.userModel
       .findOne({

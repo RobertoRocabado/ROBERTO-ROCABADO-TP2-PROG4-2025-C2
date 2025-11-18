@@ -9,7 +9,7 @@ import type { Request } from 'express';
 import { CookieOptions } from 'express';
 
 // 30 minutos para el token
-const TOKEN_TIEMPO = 5 * 60 * 1000;
+const TOKEN_TIEMPO = 30 * 60 * 1000;
 
 @Controller('auth')
 export class AuthController {

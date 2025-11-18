@@ -1,11 +1,11 @@
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsuariosService } from '../usuarios/usuarios.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { supabase } from '../supabase.client';
 
 
-const TOKEN_TIEMPO = '5m'; // 15m para 15 minutos
+const TOKEN_TIEMPO = '30m'; // 15m para 15 minutos
 const JWT_SECRET = process.env.JWT_SECRET ?? 'secreto-dev'; 
 
 
@@ -68,7 +68,13 @@ export class AuthService {
 
   async login(login: string, password: string) {
     const user = await this.users.findOneByLogin(login);
-    if (!user || !user.habilitado) throw new UnauthorizedException('Usuario o Correo No Valido');
+    if (!user) throw new UnauthorizedException('Usuario o Correo No Valido');
+
+     if (!user.habilitado) {
+      throw new ForbiddenException(
+        'Usuario deshabilitado. No esta autorizado para ingresar a la aplicacion.',
+      );
+    }
 
     const ok = await bcrypt.compare(password, user.password);
     if (!ok) throw new UnauthorizedException('Contraseña Incorrecta');
