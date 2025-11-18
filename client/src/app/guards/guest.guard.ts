@@ -8,13 +8,21 @@ export class GuestGuard implements CanActivate {
   constructor(private auth: AuthService, private router: Router) {}
 
   canActivate() {
-    if (this.auth.usuario) {
+    if (this.auth.usuario && this.auth.estaValidado) {
       return of(this.router.createUrlTree(['/publicaciones']));
     }
 
     return this.auth.autorizar().pipe(
-      map(() => this.auth.usuario ? this.router.createUrlTree(['/publicaciones']) : true),
-      catchError(() => of(true))
+      map(() => {
+        if (this.auth.usuario) {
+          return this.router.createUrlTree(['/publicaciones']);
+        }
+        return true;
+      }),
+      catchError(() => {
+        this.auth.limpiarSesionLocal();
+        return of(true);
+      })
     );
   }
 }

@@ -1,13 +1,10 @@
 import { Routes } from '@angular/router';
-import { Route } from '@angular/router';
 import { AuthGuard } from './guards/auth.guard';
 import { GuestGuard } from './guards/guest.guard';
 import { AdminGuard } from './guards/admin-guard';
 import { Cargando } from './components/cargando/cargando';
-// import { RenderMode } from '@angular/ssr';
 
 export const routes: Routes = [
-  // { path: '', redirectTo: 'cargando', pathMatch: 'full' },
   { path: 'cargando', component: Cargando },
   {
     path: 'login',
@@ -42,7 +39,7 @@ export const routes: Routes = [
       import('./pages/dashboard/dashboard').then((m) => m.Dashboard),
     canActivate: [AuthGuard, AdminGuard],
   },
-  
+
   { path: '', redirectTo: '/publicaciones', pathMatch: 'full' },
   { path: '**', redirectTo: '/publicaciones' },
 ];

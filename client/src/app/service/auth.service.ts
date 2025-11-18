@@ -4,8 +4,8 @@ import { tap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments';
 import { isPlatformBrowser } from '@angular/common';
-import Swal from 'sweetalert2';                 
-import { Router } from '@angular/router';       
+import Swal from 'sweetalert2';
+import { Router } from '@angular/router';
 
 export interface Usuario {
   _id: string;
@@ -32,15 +32,15 @@ export class AuthService {
   get estaValidado(): boolean { return this.validado; }
   //
 
-  private TIEMPO_SESION = 30  * 60 * 1000;   
-  private ADVERTENCIA = 25 * 60 * 1000;   
-  private sessionWarningTimer: any = null;    
-  private sessionExpiryTimer: any = null;     
+  private TIEMPO_SESION = 30 * 60 * 1000;
+  private ADVERTENCIA = 25 * 60 * 1000;
+  private sessionWarningTimer: any = null;
+  private sessionExpiryTimer: any = null;
 
   constructor(
     private http: HttpClient,
     @Inject(PLATFORM_ID) private platformId: Object,
-    private router: Router,                                    
+    private router: Router,
   ) {
     if (isPlatformBrowser(this.platformId)) {
       const raw = localStorage.getItem(this.storageKeyUser);
@@ -58,7 +58,7 @@ export class AuthService {
     }
   }
 
-  private startSessionTimers() {                                
+  private startSessionTimers() {
     if (!isPlatformBrowser(this.platformId)) return;
 
     this.clearSessionTimers();
@@ -89,7 +89,7 @@ export class AuthService {
           }
         });
       }
-    }, this.ADVERTENCIA );
+    }, this.ADVERTENCIA);
 
     this.sessionExpiryTimer = setTimeout(() => {
       this.logout().subscribe({
@@ -99,7 +99,7 @@ export class AuthService {
     }, this.TIEMPO_SESION);
   }
 
-  private clearSessionTimers() {                               
+  private clearSessionTimers() {
     if (!isPlatformBrowser(this.platformId)) return;
     if (this.sessionWarningTimer) {
       clearTimeout(this.sessionWarningTimer);
@@ -111,7 +111,10 @@ export class AuthService {
     }
   }
 
-  // ============================
+  limpiarSesionLocal() {
+    this.persistUser(null);
+    this.clearSessionTimers();
+  }
 
   registro(payload: FormData): Observable<any> {
     return this.http.post(`${this.base}/registro`, payload, {
@@ -120,7 +123,7 @@ export class AuthService {
   }
 
   login(login: string, password: string) {
-    //Flag 
+    // Flag
     this.validado = false;
     return this.http
       .post<{ user: Usuario }>(
@@ -131,7 +134,7 @@ export class AuthService {
       .pipe(
         tap((res) => {
           this.persistUser(res.user);
-          this.startSessionTimers();                             
+          this.startSessionTimers();
         })
       );
   }
@@ -145,7 +148,7 @@ export class AuthService {
         tap((res) => {
           if (res.ok && res.user) {
             this.setUsuario(res.user);
-            this.startSessionTimers();                           
+            this.startSessionTimers();
           }
           this.validado = true;
         })
@@ -159,7 +162,7 @@ export class AuthService {
       { withCredentials: environment.withCredentials }
     ).pipe(
       tap(() => {
-        this.startSessionTimers();                               
+        this.startSessionTimers();
       })
     );
   }
@@ -169,8 +172,7 @@ export class AuthService {
       .post(`${this.base}/logout`, {}, { withCredentials: environment.withCredentials })
       .pipe(
         tap(() => {
-          this.persistUser(null);
-          this.clearSessionTimers();                             
+          this.limpiarSesionLocal();
         })
       );
   }
@@ -178,9 +180,11 @@ export class AuthService {
   get usuario() {
     return this.user;
   }
+
   setUsuario(u: Usuario | null) {
     this.persistUser(u);
   }
+
   isAdmin(): boolean {
     return this.user?.rol === 'administrador';
   }

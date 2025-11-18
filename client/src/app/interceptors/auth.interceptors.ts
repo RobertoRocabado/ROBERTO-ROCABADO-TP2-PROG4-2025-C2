@@ -5,7 +5,13 @@ import { Router } from '@angular/router';
 import { catchError, switchMap, throwError } from 'rxjs';
 import { AuthService } from '../service/auth.service';
 
-const AUTH_PATHS = ['/auth/login', '/auth/registro', '/auth/autorizar', '/auth/refrescar'];
+const AUTH_PATHS = [
+  '/auth/login',
+  '/auth/registro',
+  '/auth/me',         
+  '/auth/refrescar',
+  '/auth/autorizar'   
+];
 
 let refreshing = false;
 
@@ -19,6 +25,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   return next(withCreds).pipe(
     catchError((err: HttpErrorResponse) => {
       const url = req.url || '';
+
       if (AUTH_PATHS.some(p => url.includes(p))) {
         return throwError(() => err);
       }
@@ -29,21 +36,31 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
           .split(';')
           .some(c => c.trim().startsWith('token='));
 
-      if (err.status === 401 && !refreshing && hasTokenCookie) {
-        refreshing = true;
+      if (err.status === 401 || err.status === 403) {
 
-        return auth.refrescar().pipe(
-          switchMap(() => {
-            refreshing = false;
-            return next(req.clone({ withCredentials: true }));
-          }),
-          catchError(e => {
-            refreshing = false;
-            auth.logout().subscribe({ error: () => {} });
-            if (isBrowser) router.navigateByUrl('/login');
-            return throwError(() => e);
-          })
-        );
+        if (hasTokenCookie && !refreshing) {
+          refreshing = true;
+
+          return auth.refrescar().pipe(
+            switchMap(() => {
+              refreshing = false;
+              return next(req.clone({ withCredentials: true }));
+            }),
+            catchError(e => {
+              refreshing = false;
+              auth.limpiarSesionLocal();
+              if (isBrowser) {
+                router.navigateByUrl('/login');
+              }
+              return throwError(() => e);
+            })
+          );
+        }
+
+        auth.limpiarSesionLocal();
+        if (isBrowser) {
+          router.navigateByUrl('/login');
+        }
       }
 
       return throwError(() => err);

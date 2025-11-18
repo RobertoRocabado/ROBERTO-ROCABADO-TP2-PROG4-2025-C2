@@ -8,13 +8,21 @@ export class AuthGuard implements CanActivate {
   constructor(private auth: AuthService, private router: Router) {}
 
   canActivate() {
-    if (this.auth.usuario) {
+    if (this.auth.usuario && this.auth.estaValidado) {
       return of(true);
     }
 
     return this.auth.autorizar().pipe(
-      map(() => this.auth.usuario ? true : this.router.createUrlTree(['/login'])),
-      catchError(() => of(this.router.createUrlTree(['/login'])))
+      map(() => {
+        if (this.auth.usuario) {
+          return true;
+        }
+        return this.router.createUrlTree(['/login']);
+      }),
+      catchError(() => {
+        this.auth.limpiarSesionLocal();
+        return of(this.router.createUrlTree(['/login']));
+      })
     );
   }
 }
