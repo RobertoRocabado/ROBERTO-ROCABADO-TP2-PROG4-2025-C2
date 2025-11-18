@@ -1,7 +1,8 @@
-<!-- <h1>Registro</h1>
+<h1>Registro</h1>
 
 <form #f="ngForm" (ngSubmit)="onSubmit(f)" novalidate>
 
+  <!-- Nombre -->
   <label>Nombre</label>
   <input type="text" name="nombre" [(ngModel)]="form.nombre" required appCapitalizarPrimera appSoloLetras
     #nombre="ngModel" />
@@ -12,6 +13,7 @@
   </div>
   }
 
+  <!-- Apellido -->
   <label>Apellido</label>
   <input type="text" name="apellido" [(ngModel)]="form.apellido" required appCapitalizarPrimera appSoloLetras
     #apellido="ngModel" />
@@ -22,6 +24,7 @@
   </div>
   }
 
+  <!-- Correo -->
   <label>Correo</label>
   <input type="email" name="correo" [(ngModel)]="form.correo" required email #correo="ngModel" />
   @if ((correo.invalid && (correo.dirty || correo.touched)) || (submitted && correo.invalid)) {
@@ -31,6 +34,7 @@
   </div>
   }
 
+  <!-- Usuario -->
   <label>Usuario</label>
   <input type="text" name="username" [(ngModel)]="form.username" required minlength="4" appCapitalizarPrimera
     #username="ngModel" />
@@ -41,6 +45,7 @@
   </div>
   }
 
+  <!-- Contraseña -->
   <label>Contraseña</label>
   <input type="password" name="password" [(ngModel)]="form.password" required appPasswordRegla #password="ngModel" />
   <small>Mínimo 8 caracteres, primera letra en mayúscula y al menos un número.</small>
@@ -52,6 +57,7 @@
   </div>
   }
 
+  <!-- Repetir contraseña -->
   <label>Repetir contraseña</label>
   <input type="password" name="confirmPassword" [(ngModel)]="confirmPassword" required [appMatchWith]="password"
     #confirmPasswordModel="ngModel" />
@@ -63,10 +69,11 @@
   </div>
   }
 
+  <!-- Descripción (opcional) -->
   <label>Descripción</label>
   <input type="text" name="descripcion" [(ngModel)]="form.descripcion" />
 
-
+  <!-- Fecha de nacimiento -->
   <label>Fecha de nacimiento</label>
   <input type="date" name="fechaNacimiento" [(ngModel)]="form.fechaNacimiento" required appAnioCuatro [min]='minFecha'
     [max]="maxFecha" #fecha="ngModel" />
@@ -84,7 +91,41 @@
   </div>
   }
 
-  
+  <!-- @if (modo === 'admin') {
+  <label>Rol</label>
+  <select type='rol' name="rol" [(ngModel)]="form.rol">
+    <option value="usuario">Usuario</option>
+    <option value="administrador">Administrador</option>
+  </select>
+} -->
+
+@if (modo === 'admin') {
+  <label>Rol</label>
+
+  <div class="rol-group">
+    <label class="rol-opcion">
+      <input
+        type="radio"
+        name="rol"
+        [(ngModel)]="form.rol"
+        [value]="'usuario'"
+      />
+      <span>Usuario</span>
+    </label>
+
+    <label class="rol-opcion">
+      <input
+        type="radio"
+        name="rol"
+        [(ngModel)]="form.rol"
+        [value]="'administrador'"
+      />
+      <span>Administrador</span>
+    </label>
+  </div>
+}
+
+  <!-- Foto de perfil (obligatoria) -->
   <label>Foto de perfil</label>
   <input type="file" accept="image/*" (change)="onFileSelected($event)" />
   @if (submitted && !fotoFile) {
@@ -100,7 +141,7 @@
   </div>
   }
 
-
+  <!-- Mensaje general al intentar enviar con faltantes -->
   @if (msgGeneral) {
   <div class="error" style="margin-top:8px;">{{ msgGeneral }}</div>
   }
@@ -109,15 +150,4 @@
   <div class="error">{{ correo.errors?.['server'] }}</div>
   }
 
-</form> -->
-
-<!-- ======================================== -->
-
-<!-- <app-formulario-registro
-  modo="registro"
-  (submitForm)="procesar($event)">
-</app-formulario-registro> -->
-
-<app-formulario-registro
-  modo="registro">
-</app-formulario-registro>
+</form>

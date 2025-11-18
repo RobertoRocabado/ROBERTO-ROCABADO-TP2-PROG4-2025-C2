@@ -6,6 +6,8 @@ import { routes } from './app/app.routes';
 import { authInterceptor } from './app/interceptors/auth.interceptors';
 import { serverRoutes } from './app/app.routes.server';
 import { ServerRoute } from '@angular/ssr';
+import { isDevMode } from '@angular/core';
+import { provideServiceWorker } from '@angular/service-worker';
 
 bootstrapApplication(App, {
   providers: [
@@ -14,7 +16,10 @@ bootstrapApplication(App, {
       withFetch(),                  // 👈 soluciona NG02801
       withInterceptors([authInterceptor])
     ),
-    provideClientHydration(),       // si usás SSR/hydration
+    provideClientHydration(), provideServiceWorker('ngsw-worker.js', {
+            enabled: !isDevMode(),
+            registrationStrategy: 'registerWhenStable:30000'
+          }),       // si usás SSR/hydration
   ],
 }).catch(console.error);
 

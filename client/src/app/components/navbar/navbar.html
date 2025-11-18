@@ -1,7 +1,6 @@
-@if(auth.estaValidado){
+<!-- @if(auth.estaValidado){
 <div class="container">
   <div class="logo">
-    <!-- <img src="/ChatGPT Image 28 oct 2025, 19_19_18.png" alt="Logo" routerLink="/" /> -->
      <img src="/ChatGPT Image 28 oct 2025, 19_19_18.png" alt="Logo" />
   </div>
   
@@ -9,6 +8,13 @@
   <ul class="nav-links">
     <li><a routerLink="/publicaciones" routerLinkActive="active">Publicaciones</a></li>
     <li><a routerLink="/miperfil" routerLinkActive="active">Mi Perfil</a></li>
+    @if (auth.usuario.rol === 'administrador') {
+      <li>
+        <a routerLink="/dashboard" routerLinkActive="active">
+          Dashboard
+        </a>
+      </li>
+    }
   </ul>
   } @else {
   <div class="nav-links"></div>
@@ -29,11 +35,6 @@
             {{ auth.usuario.correo }}
           </p>
           <p class="rol">{{ auth.usuario.rol }}</p>
-          <!-- @if(auth.usuario.rol === 'administrador'){
-          <p class="rol">{{ auth.usuario.rol }}</p>
-          } @else {
-            <p class="rol">{{ auth.usuario.rol }}</p>
-          } -->
         </div>
       </div>
     </div>
@@ -44,6 +45,84 @@
       <button class="btn register" routerLink="/registro">Registrarse</button>
     </div>
     }
+  </div>
+</div>
+} -->
+
+@if (auth.estaValidado) {
+<div class="container">
+  <!-- LOGO -->
+  <div class="logo">
+    <img src="/ChatGPT Image 28 oct 2025, 19_19_18.png" alt="Logo" />
+  </div>
+
+  <!-- TOGGLE MOBILE (solo diseño, sin lógica de auth) -->
+  <input
+    type="checkbox"
+    id="menu-toggle"
+    class="menu-toggle-input"
+  />
+  <label for="menu-toggle" class="hamburger">
+    <span></span>
+    <span></span>
+    <span></span>
+  </label>
+
+  <!-- CONTENEDOR COLAPSABLE DEL MENÚ (links + acciones) -->
+  <div class="nav-collapse">
+    @if (auth.usuario) {
+    <ul class="nav-links">
+      <li>
+        <a routerLink="/publicaciones" routerLinkActive="active">Publicaciones</a>
+      </li>
+      <li>
+        <a routerLink="/miperfil" routerLinkActive="active">Mi Perfil</a>
+      </li>
+      @if (auth.usuario.rol === 'administrador') {
+      <li>
+        <a routerLink="/dashboard" routerLinkActive="active">
+          Dashboard
+        </a>
+      </li>
+      }
+    </ul>
+    } @else {
+    <div class="nav-links"></div>
+    }
+
+    <div class="nav-actions">
+      @if (auth.usuario) {
+      <div class="profile-container">
+        <img
+          [src]="(auth.usuario && auth.usuario.fotoUrl) || 'assets/user.jpg'"
+          class="profile-pic"
+          alt="Foto perfil"
+        />
+
+        <div class="profile-preview">
+          <img
+            [src]="(auth.usuario && auth.usuario.fotoUrl) || 'assets/user.jpg'"
+            alt="Foto grande"
+          />
+          <div class="user-data">
+            <p class="name">
+              {{ auth.usuario.nombre }} {{ auth.usuario.apellido }}
+            </p>
+            <p class="email">
+              {{ auth.usuario.correo }}
+            </p>
+            <p class="rol">{{ auth.usuario.rol }}</p>
+          </div>
+        </div>
+      </div>
+      <button class="btn logout" (click)="onLogout()">Cerrar sesión</button>
+      } @else {
+      <div class="auth-buttons">
+        <button class="btn login" routerLink="/login">Iniciar sesión</button>
+        <button class="btn register" routerLink="/registro">Registrarse</button>
+      </div>
+      }
+    </div>
   </div>
 </div>
 }

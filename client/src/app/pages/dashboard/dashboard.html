@@ -1,1 +1,29 @@
-<p>dashboard works!</p>
+<div class="segmented-wrapper">
+  <div class="segmented">
+
+    <button class="segmented-item" [class.activo]="pestanaSeleccionada === 'usuarios'"
+      (click)="seleccionarPestana('usuarios')">
+      Usuarios
+    </button>
+
+    <button class="segmented-item" [class.activo]="pestanaSeleccionada === 'estadisticas'"
+      (click)="seleccionarPestana('estadisticas')">
+      Estadisticas
+    </button>
+
+  </div>
+</div>
+
+<div class="panel-contenido">
+
+  @if (pestanaSeleccionada === 'usuarios') {
+  <div class="panel">
+    <app-usuarios />
+  </div>
+  } @else if (pestanaSeleccionada === 'estadisticas') {
+  <div class="panel">
+    <app-estadisticas />
+  </div>
+  }
+
+</div>

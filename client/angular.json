@@ -51,7 +51,8 @@
                 }
               ],
               "outputHashing": "all",
-              "prerender": false
+              "prerender": false,
+              "serviceWorker": "ngsw-config.json"
             },
             "development": {
               "optimization": false,

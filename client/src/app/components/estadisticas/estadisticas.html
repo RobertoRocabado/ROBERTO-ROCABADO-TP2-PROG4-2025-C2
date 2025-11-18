@@ -1,0 +1,206 @@
+<!-- <div class="estadisticas-contenedor">
+  <h2>Estadísticas</h2>
+
+  <section class="card">
+    <h3>Publicaciones por usuario</h3>
+
+    <div class="filtros">
+      <label>
+        Desde
+        <input
+          type="date"
+          (change)="onCambioPubFechaInicio($event.target.value)"
+        />
+      </label>
+
+      <label>
+        Hasta
+        <input
+          type="date"
+          (change)="onCambioPubFechaFin($event.target.value)"
+        />
+      </label>
+    </div>
+
+    <div class="grafico-centro">
+      <canvas
+        baseChart
+        [type]="pieType"
+        [data]="pieChartData"
+      ></canvas>
+    </div>
+  </section>
+
+
+  <section class="card">
+    <h3>Comentarios en el tiempo</h3>
+
+    <div class="filtros">
+      <label>
+        Desde
+        <input
+          type="date"
+          (change)="onCambioComFechaInicio($event.target.value)"
+        />
+      </label>
+
+      <label>
+        Hasta
+        <input
+          type="date"
+          (change)="onCambioComFechaFin($event.target.value)"
+        />
+      </label>
+    </div>
+
+    <div class="grafico-centro">
+      <canvas
+        baseChart
+        type="line"
+        [data]="lineData"
+        [options]="lineOptions"
+      ></canvas>
+    </div>
+  </section>
+
+  <section class="card">
+    <h3>Comentarios por publicación</h3>
+
+    <div class="filtros">
+      <label>
+        Desde
+        <input
+          type="date"
+          (change)="onCambioComPubFechaInicio($event.target.value)"
+        />
+      </label>
+
+      <label>
+        Hasta
+        <input
+          type="date"
+          (change)="onCambioComPubFechaFin($event.target.value)"
+        />
+      </label>
+    </div>
+
+    <div class="grafico-centro">
+      <canvas
+        baseChart
+        [type]="barType"
+        [data]="barData"
+        [options]="barOptions"
+      ></canvas>
+    </div>
+  </section>
+</div> -->
+
+
+<!-- ==================== -->
+
+
+<div class="estadisticas-contenedor">
+  <h2>Estadísticas</h2>
+
+  <section class="card">
+  <h3>Publicaciones por usuario</h3>
+
+  <div class="filtros">
+    <label>
+      Desde
+      <input
+        type="date"
+        (change)="onCambioPubFechaInicio($event.target.value)"
+      />
+    </label>
+
+    <label>
+      Hasta
+      <input
+        type="date"
+        (change)="onCambioPubFechaFin($event.target.value)"
+      />
+    </label>
+  </div>
+
+  <div class="torta-con-resumen">
+    <div class="grafico-centro">
+      <canvas
+        baseChart
+        [type]="pieType"
+        [data]="pieChartData"
+        [options]="pieOptions"
+        [plugins]="pieChartPlugins"
+      ></canvas>
+    </div>
+
+    <div class="resumen-torta">
+      <p><strong>Total publicaciones:</strong></p>
+      <p>{{ totalPublicacionesPie }}</p>
+    </div>
+  </div>
+</section>
+
+
+  <section class="card">
+    <h3>Comentarios en el tiempo</h3>
+
+    <div class="filtros">
+      <label>
+        Desde
+        <input
+          type="date"
+          (change)="onCambioComFechaInicio($event.target.value)"
+        />
+      </label>
+
+      <label>
+        Hasta
+        <input
+          type="date"
+          (change)="onCambioComFechaFin($event.target.value)"
+        />
+      </label>
+    </div>
+
+    <div class="grafico-centro">
+      <canvas
+        baseChart
+        type="line"
+        [data]="lineData"
+        [options]="lineOptions"
+      ></canvas>
+    </div>
+  </section>
+
+  <section class="card">
+    <h3>Comentarios por publicación</h3>
+
+    <div class="filtros">
+      <label>
+        Desde
+        <input
+          type="date"
+          (change)="onCambioComPubFechaInicio($event.target.value)"
+        />
+      </label>
+
+      <label>
+        Hasta
+        <input
+          type="date"
+          (change)="onCambioComPubFechaFin($event.target.value)"
+        />
+      </label>
+    </div>
+
+    <div class="grafico-centro">
+      <canvas
+        baseChart
+        [type]="barType"
+        [data]="barData"
+        [options]="barOptions"
+      ></canvas>
+    </div>
+  </section>
+</div>

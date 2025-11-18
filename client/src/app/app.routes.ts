@@ -2,8 +2,9 @@ import { Routes } from '@angular/router';
 import { Route } from '@angular/router';
 import { AuthGuard } from './guards/auth.guard';
 import { GuestGuard } from './guards/guest.guard';
+import { AdminGuard } from './guards/admin-guard';
 import { Cargando } from './components/cargando/cargando';
-import { RenderMode } from '@angular/ssr';
+// import { RenderMode } from '@angular/ssr';
 
 export const routes: Routes = [
   // { path: '', redirectTo: 'cargando', pathMatch: 'full' },
@@ -34,6 +35,12 @@ export const routes: Routes = [
     path: 'publicaciones/:id',
     loadComponent: () =>
       import('./pages/publicacion/publicacion').then((m) => m.PublicacionDetalle),
+  },
+  {
+    path: 'dashboard',
+    loadComponent: () =>
+      import('./pages/dashboard/dashboard').then((m) => m.Dashboard),
+    canActivate: [AuthGuard, AdminGuard],
   },
   
   { path: '', redirectTo: '/publicaciones', pathMatch: 'full' },
