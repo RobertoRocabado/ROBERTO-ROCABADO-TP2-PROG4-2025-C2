@@ -168,7 +168,7 @@
 }
 
 .rol-opcion input[type="radio"] {
-  accent-color: var(--accent); /* navegadores modernos */
+  accent-color: var(--accent); 
 }
 
 @media (max-width: 520px) {

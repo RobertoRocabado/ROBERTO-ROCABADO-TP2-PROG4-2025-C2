@@ -21,44 +21,6 @@
       <p>Cargando...</p>
     </div>
   } @else {
-  <!-- <table class="tabla">
-    <thead>
-      <tr>
-        <th>Nombre</th>
-        <th>Correo</th>
-        <th>Username</th>
-        <th>Rol</th>
-        <th>Habilitado</th>
-        <th>Acciones</th>
-      </tr>
-    </thead>
-
-    <tbody>
-      @for (u of usuarios; track u._id) {
-      <tr>
-        <td>{{ u.nombre }} {{ u.apellido }}</td>
-        <td>{{ u.correo }}</td>
-        <td>{{ u.username }}</td>
-        <td>{{ u.rol }}</td>
-        <td>{{ u.habilitado | estado}}</td>
-        <td>
-          @if(u._id !== usuarioActual?._id){
-          @if(u.habilitado)
-          {
-          <button class="btn-deshabilitar" (click)="deshabilitar(u)">
-            Deshabilitar
-          </button>
-          } @else {
-          <button class="btn-habilitar" (click)="habilitar(u)">
-            Habilitar
-          </button>
-          }
-          }
-        </td>
-      </tr>
-      }
-    </tbody>
-  </table> -->
   <div class="tabla-wrapper">
     <table class="tabla">
       <thead>

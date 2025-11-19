@@ -5,7 +5,6 @@ import { environment } from '../../environments';
 
 @Injectable({ providedIn: 'root' })
 export class EstadisticasService {
-  // private apiUrl = 'http://localhost:3000/publicaciones/estadisticas';
   private apiUrl = `${environment.apiBase}/publicaciones/estadisticas`;
 
   constructor(private http: HttpClient) {}
