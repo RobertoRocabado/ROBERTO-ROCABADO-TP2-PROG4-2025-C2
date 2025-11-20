@@ -1,12 +1,14 @@
 import { Component, EventEmitter, Input, Output, signal } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Publicacion } from '../../service/publicaciones.service';
+import { FormatoFechaPipe } from '../../Pipe/formato-fecha.pipe';
+import { CorreoOcultoPipe } from '../../Pipe/correo-oculto.pipe';
 
 @Component({
   selector: 'app-publicacion-card',
   standalone: true,
-  imports: [CommonModule, FormsModule, DatePipe],
+  imports: [CommonModule, FormsModule, FormatoFechaPipe, CorreoOcultoPipe],
   templateUrl: './publicacion-card.html',
   styleUrls: ['./publicacion-card.css'],
 })

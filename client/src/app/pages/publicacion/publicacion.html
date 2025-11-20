@@ -1,20 +1,17 @@
 <section class="container">
   <button class="btn-volver" (click)="volver()">↩︎</button>
   @if (cargandoPub()) {
-    <div class="spinner-container">
-      <div class="spinner"></div>
-      <p>Cargando...</p>
-    </div>
+  <div class="spinner-container">
+    <div class="spinner"></div>
+    <p>Cargando...</p>
+  </div>
   } @else if (!pub()) {
   <p class="muted">No se encontró la publicación.</p>
   } @else {
   <article class="pub">
     <header class="user">
-      <div
-        class="avatar"
-        [style.background-image]="'url(' + (pub()!.usuario.fotoUrl || '') + ')'"
-        [class.has-img]="!!pub()!.usuario.fotoUrl"
-      >
+      <div class="avatar" [style.background-image]="'url(' + (pub()!.usuario.fotoUrl || '') + ')'"
+        [class.has-img]="!!pub()!.usuario.fotoUrl">
         @if (!pub()!.usuario.fotoUrl) {
         {{ (pub()!.usuario.nombre || '')[0] }}{{ (pub()!.usuario.apellido || '')[0] }}
         }
@@ -23,10 +20,14 @@
       <div class="meta">
         <div class="name">
           <strong>{{ pub()!.usuario.nombre }} {{ pub()!.usuario.apellido }}</strong>
-          <small>&lt;{{ pub()!.usuario.correo }}&gt;</small>
+          <small>&lt;{{ pub()!.usuario.correo | correoOculto}}&gt;</small>
         </div>
-        <small class="date">{{ pub()!.createdAt | date : 'medium' }}</small>
+        <!-- <small class="date">{{ pub()!.createdAt | date : 'medium' }}</small> -->
+        <small class="date">{{ pub() | formatoFecha }}</small>       
       </div>
+       @if (esAdmin() || meCorreo() === pub()!.usuario.correo) {
+          <button class="btn-eliminar" (click)="eliminarPublicacion()">Eliminar</button>
+        }
     </header>
     <hr />
     <h2 class="titulo">{{ pub()!.titulo }}</h2>
@@ -51,12 +52,8 @@
     <h3>Comentarios</h3>
 
     <div class="comentar">
-      <input
-        [ngModel]="textoComentario()"
-        (ngModelChange)="textoComentario.set($event)"
-        placeholder="Escribe un comentario…"
-        maxlength="800"
-      />
+      <input [ngModel]="textoComentario()" (ngModelChange)="textoComentario.set($event)"
+        placeholder="Escribe un comentario…" maxlength="800" />
       <button class="btn-enviar" (click)="enviarComentario()">Enviar</button>
     </div>
 
@@ -69,17 +66,13 @@
       <li class="coment">
         <div class="c-head">
           <strong>{{ c.autor.nombre }} {{ c.autor.apellido }}</strong>
-          <small>&lt;{{ c.autor.correo }}&gt;</small>
-          <span class="ago">{{ c.createdAt | date : 'medium' }}</span>
+          <small>&lt;{{ c.autor.correo | correoOculto}}&gt;</small>
+          <span class="ago">{{ c | formatoFecha }}</span>
           @if (c.modificado) { <span class="edited">(editado)</span> }
         </div>
         <hr />
         @if (editId() === c._id) {
-        <textarea
-          rows="3"
-          [ngModel]="editTexto()"
-          (ngModelChange)="editTexto.set($event)"
-        ></textarea>
+        <textarea rows="3" [ngModel]="editTexto()" (ngModelChange)="editTexto.set($event)"></textarea>
 
         <div class="edit-actions">
           <button class="ghost" (click)="guardarEdicion(c)">Guardar</button>
@@ -87,7 +80,7 @@
         </div>
         } @else {
         <p class="c-body">{{ c.texto }}</p>
-          <hr>
+        <hr>
         @if (puedeEditarComentario(c)) {
         <button class="ghost" (click)="activarEdicion(c)">Editar</button>
         } }

@@ -8,9 +8,10 @@
     <div class="meta">
       <div class="name">
         <strong>{{ pub.usuario.nombre }} {{ pub.usuario.apellido }}</strong>
-        <small>&lt;{{ pub.usuario.correo }}&gt;</small>
+        <small>&lt;{{ pub.usuario.correo | correoOculto}}&gt;</small>
       </div>
-      <small class="date">{{ pub.createdAt | date:'medium' }}</small>
+      <!-- <small class="date">{{ pub.createdAt | date:'medium' }}</small> -->
+       <small class="date">{{ pub | formatoFecha}}</small>
     </div>
 
     @if (esPropia) {
@@ -67,8 +68,8 @@
         <div class="bubble">
           <div class="autor">
             <strong>{{ c.autor.nombre }} {{ c.autor.apellido }}</strong>
-            <small>&lt;{{ c.autor.correo }}&gt;</small>
-            <span class="ago">{{ c.createdAt | date:'medium' }}</span>
+            <small>&lt;{{ c.autor.correo | correoOculto}}&gt;</small>
+            <span class="ago">{{ c | formatoFecha }}</span>
           </div>
           <p>{{ c.texto }}</p>
         </div>

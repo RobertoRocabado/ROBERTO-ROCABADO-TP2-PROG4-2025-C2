@@ -19,6 +19,7 @@ export interface Comentario {
   texto: string;
   createdAt: string;
   modificado?: boolean;
+  updatedAt?: string | null;
 }
 
 export interface Publicacion {
@@ -100,13 +101,13 @@ export class PublicacionesApi {
 
   // Sprint #3
 
-  getById(id: string): Observable<Publicacion> {
+  obtenerPorId(id: string): Observable<Publicacion> {
     return this.http.get<Publicacion>(`${this.base}/${id}`, {
       withCredentials: environment.withCredentials,
     });
   }
 
-  getComentarios(
+  obtenerComentarios(
     id: string,
     opts: { offset?: number; limit?: number }
   ): Observable<{

@@ -1,15 +1,18 @@
 import { Component, computed, signal } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../service/auth.service';
 import { PublicacionesApi, Publicacion, Comentario } from '../../service/publicaciones.service';
 import { firstValueFrom } from 'rxjs';
+import { FormatoFechaPipe } from '../../Pipe/formato-fecha.pipe';
+import { CorreoOcultoPipe } from '../../Pipe/correo-oculto.pipe';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-publicacion-page',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, DatePipe],
+  imports: [CommonModule, RouterModule, FormsModule, FormatoFechaPipe, CorreoOcultoPipe],
   templateUrl: './publicacion.html',
   styleUrls: ['./publicacion.css'],
 })
@@ -60,7 +63,7 @@ export class PublicacionDetalle {
   async cargarPublicacion(id: string) {
     this.cargandoPub.set(true);
     try {
-      const p = await firstValueFrom(this.api.getById(id));
+      const p = await firstValueFrom(this.api.obtenerPorId(id));
       this.pub.set(p);
     } finally {
       this.cargandoPub.set(false);
@@ -77,7 +80,7 @@ export class PublicacionDetalle {
     this.cargandoCom.set(true);
     try {
       const res = await firstValueFrom(
-        this.api.getComentarios(this.pubId, { offset: this.offset(), limit: this.LIMIT })
+        this.api.obtenerComentarios(this.pubId, { offset: this.offset(), limit: this.LIMIT })
       );
       
       const actuales = this.comentarios() ?? [];
@@ -179,4 +182,42 @@ export class PublicacionDetalle {
   volver(){
     this.router.navigate(['/publicaciones']);
   }
+
+  async eliminarPublicacion() {
+  const pub = this.pub();
+  if (!pub) return;
+
+  const result = await Swal.fire({
+    title: 'Eliminar publicacion',
+    text: 'Esta accion no se puede deshacer',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Si, eliminar',
+    cancelButtonText: 'Cancelar',
+    confirmButtonColor: '#b1acac'
+  });
+
+  if (!result.isConfirmed) return;
+
+  try {
+    await firstValueFrom(this.api.eliminar(pub._id));
+
+    await Swal.fire({
+      icon: 'success',
+      title: 'Eliminada',
+      text: 'La publicacion se elimino correctamente',
+      timer: 1800,
+      showConfirmButton: false
+    });
+
+    this.router.navigate(['/publicaciones']);
+
+  } catch (error) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'No se pudo eliminar la publicacion'
+    });
+  }
+}
 }

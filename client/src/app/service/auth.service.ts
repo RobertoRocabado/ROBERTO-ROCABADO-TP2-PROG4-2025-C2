@@ -29,25 +29,65 @@ export class AuthService {
 
   // para el spinner sprint #3
   private validado = false;
-  get estaValidado(): boolean { return this.validado; }
+  get estaValidado(): boolean {
+    return this.validado;
+  }
   //
 
-  private TIEMPO_SESION = 30 * 60 * 1000;
-  private ADVERTENCIA = 25 * 60 * 1000;
+  private TIEMPO_SESION = 15 * 60 * 1000;
+  private ADVERTENCIA = 2 * 60 * 1000;
   private sessionWarningTimer: any = null;
   private sessionExpiryTimer: any = null;
 
   constructor(
     private http: HttpClient,
     @Inject(PLATFORM_ID) private platformId: Object,
-    private router: Router,
+    private router: Router
   ) {
     if (isPlatformBrowser(this.platformId)) {
       const raw = localStorage.getItem(this.storageKeyUser);
       if (raw) {
-        try { this.user = JSON.parse(raw) as Usuario; } catch {}
+        try {
+          this.user = JSON.parse(raw) as Usuario;
+        } catch {}
       }
+
+      if (!this.user) {
+        return;
+      }
+
+      if (!this.tieneTokenCookie()) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Sesion no valida',
+          text: 'No se pudo validar al usuario. Por favor vuelve a iniciar sesion.',
+          confirmButtonText: 'Aceptar',
+        }).then(() => {
+          this.limpiarSesionLocal();
+          this.router.navigateByUrl('/login');
+        });
+        return;
+      }
+
+      this.autorizar().subscribe({
+        error: () => {
+          Swal.fire({
+            icon: 'error',
+            title: 'Sesion no valida',
+            text: 'No se pudo validar al usuario. Por favor vuelve a iniciar sesion.',
+            confirmButtonText: 'Aceptar',
+          }).then(() => {
+            this.limpiarSesionLocal();
+            this.router.navigateByUrl('/login');
+          });
+        },
+      });
     }
+  }
+
+  tieneTokenCookie(): boolean {
+    if (!isPlatformBrowser(this.platformId)) return false;
+    return document.cookie.split(';').some((c) => c.trim().startsWith('token='));
   }
 
   private persistUser(u: Usuario | null) {
@@ -66,7 +106,7 @@ export class AuthService {
     this.sessionWarningTimer = setTimeout(async () => {
       const result = await Swal.fire({
         title: 'Tu sesión está por expirar',
-        text: 'Quedan 5 minutos de sesión. ¿Querés extenderla?',
+        text: 'Quedan 13 minutos de sesión. ¿Querés extenderla?',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: 'Sí, extender sesión',
@@ -84,9 +124,9 @@ export class AuthService {
               text: 'Tu sesión se extendió 15 minutos más.',
               icon: 'success',
               timer: 1500,
-              showConfirmButton: false
+              showConfirmButton: false,
             });
-          }
+          },
         });
       }
     }, this.ADVERTENCIA);
@@ -156,15 +196,13 @@ export class AuthService {
   }
 
   refrescar() {
-    return this.http.post(
-      `${this.base}/refrescar`,
-      {},
-      { withCredentials: environment.withCredentials }
-    ).pipe(
-      tap(() => {
-        this.startSessionTimers();
-      })
-    );
+    return this.http
+      .post(`${this.base}/refrescar`, {}, { withCredentials: environment.withCredentials })
+      .pipe(
+        tap(() => {
+          this.startSessionTimers();
+        })
+      );
   }
 
   logout() {

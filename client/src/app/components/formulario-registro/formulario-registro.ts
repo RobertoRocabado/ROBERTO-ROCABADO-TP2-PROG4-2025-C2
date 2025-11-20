@@ -11,7 +11,7 @@ import { FormsModule, NgForm, NgModel } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../service/auth.service';
 import Swal from 'sweetalert2';
-import { SoloLetrasDirective } from '../../Directives/solo-letras';
+import { SoloLetrasDirective } from '../../Directives/solo-letra';
 import { CapitalizarPrimeraDirective } from '../../Directives/capitalizar-primera';
 import { PasswordReglaDirective } from '../../Directives/password-regla';
 import { MatchPasswordDirective } from '../../Directives/match-password';

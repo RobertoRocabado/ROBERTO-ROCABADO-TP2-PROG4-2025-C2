@@ -9,7 +9,7 @@ export class EstadisticasService {
 
   constructor(private http: HttpClient) {}
 
-  private buildParams(
+  private parametrosFecha(
     fechaInicio?: string,
     fechaFin?: string,
   ): HttpParams {
@@ -32,7 +32,8 @@ export class EstadisticasService {
     return this.http.get<any[]>(
       `${this.apiUrl}/publicaciones-por-usuario`,
       {
-        params: this.buildParams(fechaInicio, fechaFin),
+        params: this.parametrosFecha
+    (fechaInicio, fechaFin),
       },
     );
   }
@@ -44,7 +45,8 @@ export class EstadisticasService {
     return this.http.get<any[]>(
       `${this.apiUrl}/comentarios-por-fecha`,
       {
-        params: this.buildParams(fechaInicio, fechaFin),
+        params: this.parametrosFecha
+    (fechaInicio, fechaFin),
       },
     );
   }
@@ -56,7 +58,8 @@ export class EstadisticasService {
     return this.http.get<any[]>(
       `${this.apiUrl}/comentarios-por-publicacion`,
       {
-        params: this.buildParams(fechaInicio, fechaFin),
+        params: this.parametrosFecha
+    (fechaInicio, fechaFin),
       },
     );
   }

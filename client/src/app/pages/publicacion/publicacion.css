@@ -32,9 +32,10 @@
 }
 
 .user {
-    display: flex;
-    align-items: center;
+    display: grid;
+    grid-template-columns: 48px 1fr auto;
     gap: .75rem;
+    align-items: center;
     padding-bottom: .5rem;
     margin-bottom: .5rem;
 }
@@ -193,6 +194,19 @@ button.ghost {
     border: 1px solid #e5e7eb;
     background: #fff;
     cursor: pointer;
+}
+
+.btn-eliminar {
+  padding: .4rem .75rem;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btn-eliminar:hover {
+  background: #d4d4d8;
 }
 
 .spinner-container {
